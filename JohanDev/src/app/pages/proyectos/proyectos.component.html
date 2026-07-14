@@ -1,0 +1,73 @@
+<section class="projects-page-section">
+  <div class="projects-page-container">
+    
+    <div class="projects-page-header">
+      <h1 class="page-title">
+        <span class="title-main">Mis Proyectos</span>
+        <span class="title-highlight">Portafolio de Trabajo</span>
+      </h1>
+      <p class="page-subtitle">
+        Una selección de soluciones innovadoras y personalizadas que he desarrollado. Cada proyecto refleja un compromiso con la calidad, el rendimiento y la experiencia del usuario.
+      </p>
+    </div>
+
+    <!-- Interactive Filters -->
+    <div class="filters-container">
+      <button (click)="setFilter('todos')" class="filter-btn" [class.active]="currentFilter === 'todos'">
+        Todos
+      </button>
+      <button (click)="setFilter('completado')" class="filter-btn" [class.active]="currentFilter === 'completado'">
+        <i class="fas fa-check"></i> Completados
+      </button>
+      <button (click)="setFilter('en-progreso')" class="filter-btn" [class.active]="currentFilter === 'en-progreso'">
+        <i class="fas fa-clock"></i> En Progreso
+      </button>
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="projects-list-grid">
+      <div *ngFor="let project of filteredProjects" class="project-detail-card">
+        <div class="card-image-wrap">
+          <img [src]="project.image" [alt]="project.title" />
+          <div class="card-image-overlay">
+            <a [href]="project.githubUrl" target="_blank" rel="noopener noreferrer" class="btn-github-hover">
+              <i class="fab fa-github"></i> Ver Código
+            </a>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="card-header-row">
+            <h2 class="card-title">{{ project.title }}</h2>
+            <div class="status-badge" [ngClass]="getStatusBadgeClass(project.status)">
+              <i class="fas" [ngClass]="getStatusIcon(project.status)"></i>
+              <span>{{ getStatusText(project.status) }}</span>
+            </div>
+          </div>
+
+          <p class="card-description">{{ project.description }}</p>
+
+          <div class="card-tech-wrapper">
+            <div class="card-tech-list">
+              <span *ngFor="let tech of project.technologies" class="tech-tag-badge">{{ tech }}</span>
+            </div>
+          </div>
+
+          <div class="card-footer-row">
+            <a [href]="project.githubUrl" target="_blank" rel="noopener noreferrer" class="github-action-btn">
+              <i class="fab fa-github"></i> Repositorio GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredProjects.length === 0" class="empty-projects-state">
+      <i class="fas fa-folder-open"></i>
+      <p>No se encontraron proyectos con esta categoría actualmente.</p>
+    </div>
+
+  </div>
+</section>
+<app-footer></app-footer>

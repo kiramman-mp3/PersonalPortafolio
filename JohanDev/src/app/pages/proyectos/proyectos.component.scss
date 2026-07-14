@@ -1,0 +1,422 @@
+.projects-page-section {
+  position: relative;
+  width: 100%;
+  background: var(--dark);
+  padding: 120px 8% 80px;
+  color: var(--light);
+  overflow: hidden;
+  z-index: 1;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(77, 53, 255, 0.12), transparent 70%);
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 10%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.1), transparent 70%);
+    filter: blur(100px);
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+.projects-page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.projects-page-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 4rem;
+
+  .page-title {
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 1.5rem 0;
+
+    .title-main {
+      display: block;
+      font-size: clamp(2.5rem, 5vw, 3.8rem);
+      color: var(--light);
+      letter-spacing: -1px;
+    }
+
+    .title-highlight {
+      display: block;
+      font-size: clamp(2.5rem, 5vw, 3.8rem);
+      background: linear-gradient(135deg, var(--primary), var(--purple-bright));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  .page-subtitle {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+  }
+}
+
+/* Category Filters */
+.filters-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3.5rem;
+  flex-wrap: wrap;
+
+  .filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    i {
+      font-size: 0.85rem;
+    }
+
+    &:hover {
+      border-color: rgba(77, 53, 255, 0.4);
+      background: rgba(77, 53, 255, 0.1);
+      color: var(--primary);
+    }
+
+    &.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--light);
+      box-shadow: 0 4px 15px rgba(77, 53, 255, 0.35);
+    }
+  }
+}
+
+/* Projects Grid */
+.projects-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2.5rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.project-detail-card {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.04) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    border-color: rgba(77, 53, 255, 0.25);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 25px rgba(77, 53, 255, 0.08);
+  }
+}
+
+/* Image Wrap & Hover Overlay */
+.card-image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.2);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .card-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(7, 8, 18, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+  }
+
+  &:hover {
+    img {
+      transform: scale(1.05);
+    }
+    .card-image-overlay {
+      opacity: 1;
+    }
+  }
+}
+
+.btn-github-hover {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--light);
+  color: #1a1a1a;
+  border-radius: 50px;
+  padding: 10px 22px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.25s ease;
+
+  &:hover {
+    background: var(--primary);
+    color: var(--light);
+    transform: scale(1.03);
+  }
+
+  i {
+    font-size: 1.1rem;
+  }
+}
+
+/* Card Body */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem;
+  flex-grow: 1;
+}
+
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--light);
+  margin: 0;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 5px 12px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+
+  i {
+    font-size: 0.7rem;
+  }
+
+  &.badge-completed {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+
+  &.badge-progress {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+  }
+
+  &.badge-planned {
+    background: rgba(59, 130, 246, 0.12);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+  }
+}
+
+.card-description {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0 0 1.5rem 0;
+}
+
+/* Tech List inside cards */
+.card-tech-wrapper {
+  margin-top: auto;
+  margin-bottom: 1.5rem;
+}
+
+.card-tech-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  .tech-tag-badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(77, 53, 255, 0.12);
+      border-color: rgba(77, 53, 255, 0.3);
+      color: var(--primary);
+    }
+  }
+}
+
+.card-footer-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.github-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--primary);
+  }
+
+  i {
+    font-size: 1.15rem;
+  }
+}
+
+/* Empty State */
+.empty-projects-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: rgba(255, 255, 255, 0.5);
+
+  i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.25);
+  }
+
+  p {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+}
+
+/* Light Theme overrides */
+body.light-theme {
+  .projects-page-section {
+    background: var(--bg-color);
+    color: var(--text-color);
+  }
+
+  .projects-page-header {
+    .page-title .title-main {
+      color: var(--text-color);
+    }
+    .page-subtitle {
+      color: var(--text-muted);
+    }
+  }
+
+  .filters-container .filter-btn {
+    background: #ffffff;
+    border-color: rgba(15, 23, 42, 0.15);
+    color: rgba(15, 23, 42, 0.85);
+
+    &:hover {
+      border-color: rgba(77, 53, 255, 0.4);
+      background: rgba(77, 53, 255, 0.08);
+      color: var(--primary);
+    }
+
+    &.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+  }
+
+  .project-detail-card {
+    background: var(--card-bg);
+    border-color: var(--card-border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.09), 0 0 25px rgba(77, 53, 255, 0.06);
+    }
+  }
+
+  .card-title {
+    color: var(--text-color);
+  }
+
+  .card-description {
+    color: var(--text-muted);
+  }
+
+  .card-tech-list .tech-tag-badge {
+    background: #ffffff;
+    border-color: rgba(15, 23, 42, 0.12);
+    color: rgba(15, 23, 42, 0.7);
+
+    &:hover {
+      background: rgba(77, 53, 255, 0.08);
+      border-color: rgba(77, 53, 255, 0.3);
+      color: var(--primary);
+    }
+  }
+
+  .card-footer-row {
+    border-top-color: rgba(15, 23, 42, 0.1);
+  }
+
+  .github-action-btn {
+    color: rgba(15, 23, 42, 0.85);
+
+    &:hover {
+      color: var(--primary);
+    }
+  }
+}
