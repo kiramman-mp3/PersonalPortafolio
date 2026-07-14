@@ -4,6 +4,7 @@ import { CorporateAboutComponent } from '../../components/corporate-about/corpor
 import { FooterComponent } from '../../components/footer/footer.component';
 import { FeaturedServicesComponent } from '../../components/featured-services/featured-services.component';
 import { FeaturedProjectsComponent } from '../../components/featured-projects/featured-projects.component';
+import { ContactComponent } from '../../components/contact/contact.component';
 import { ScrollRevealDirective } from '../../shared/directives/scroll-reveal.directive';
 
 @Component({
@@ -15,6 +16,7 @@ import { ScrollRevealDirective } from '../../shared/directives/scroll-reveal.dir
     CorporateAboutComponent,
     FeaturedServicesComponent,
     FeaturedProjectsComponent,
+    ContactComponent,
     FooterComponent,
   ],
   templateUrl: './home.html',

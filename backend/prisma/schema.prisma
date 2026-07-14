@@ -31,3 +31,12 @@ model Projects {
   image        String   @db.VarChar(255)
   githubUrl    String   @db.VarChar(255)
 }
+
+model Contacts {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(100)
+  email     String   @db.VarChar(150)
+  subject   String?  @db.VarChar(150)
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+}
