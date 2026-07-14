@@ -16,6 +16,7 @@ import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
 export class ServiciosComponent implements OnInit {
   services: ServiceItem[] = [];
   isBrowser = false;
+  isLoading = true;
 
   constructor(
     private servicesService: ServicesService,
@@ -27,10 +28,19 @@ export class ServiciosComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.isBrowser) {
-      this.servicesService.getServices().subscribe(data => {
-        this.services = data;
-        this.cdr.detectChanges();
+      this.servicesService.getServices().subscribe({
+        next: (data) => {
+          this.services = data;
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        }
       });
+    } else {
+      this.isLoading = false;
     }
   }
 

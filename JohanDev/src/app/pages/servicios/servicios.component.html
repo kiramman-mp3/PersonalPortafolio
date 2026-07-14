@@ -10,7 +10,13 @@
       </p>
     </div>
 
-    <div class="services-list">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-spinner-container">
+      <div class="premium-spinner"></div>
+      <p class="loading-text">Cargando servicios...</p>
+    </div>
+
+    <div class="services-list" *ngIf="!isLoading">
       <div *ngFor="let service of services; let i = index" class="service-detail-card" [class.reverse]="i % 2 !== 0">
         <!-- Service Image -->
         <div class="service-image-block">

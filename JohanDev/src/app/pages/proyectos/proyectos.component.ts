@@ -18,6 +18,7 @@ export class ProyectosComponent implements OnInit {
   filteredProjects: Project[] = [];
   currentFilter = 'todos';
   isBrowser = false;
+  isLoading = true;
 
   constructor(
     private projectsService: ProjectsService,
@@ -29,11 +30,20 @@ export class ProyectosComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.isBrowser) {
-      this.projectsService.getProjects().subscribe(data => {
-        this.projects = data;
-        this.filteredProjects = data;
-        this.cdr.detectChanges();
+      this.projectsService.getProjects().subscribe({
+        next: (data) => {
+          this.projects = data;
+          this.filteredProjects = data;
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        }
       });
+    } else {
+      this.isLoading = false;
     }
   }
 
