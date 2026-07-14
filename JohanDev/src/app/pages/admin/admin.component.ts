@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ServicesService, ServiceItem } from '../../shared/services/services.service';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
+import { TECH_MASTER_LIST } from '../../shared/constants/tech-list';
 
 @Component({
   selector: 'app-admin',
@@ -24,6 +25,11 @@ export class AdminComponent implements OnInit {
   
   token = '';
 
+  // Tech list from constants
+  techMasterList = TECH_MASTER_LIST;
+  selectedTechnologies: string[] = [];
+  customTechName = '';
+
   // Form states
   showServiceModal = false;
   showProjectModal = false;
@@ -36,8 +42,7 @@ export class AdminComponent implements OnInit {
     description: '',
     imageUrl: '',
     imageAlt: '',
-    extendedInfoStr: '',
-    technologiesStr: ''
+    extendedInfoStr: ''
   };
 
   projectForm = {
@@ -45,9 +50,11 @@ export class AdminComponent implements OnInit {
     title: '',
     description: '',
     image: '',
-    technologiesStr: '',
     status: 'completado' as 'completado' | 'en-progreso' | 'planificado',
-    githubUrl: ''
+    githubUrl: '',
+    webUrl: '',
+    backendUrl: '',
+    apkUrl: ''
   };
 
   constructor(
@@ -103,31 +110,102 @@ export class AdminComponent implements OnInit {
     this.projectsService.getProjects().subscribe(data => this.projects = data);
   }
 
+  // IMAGE UPLOAD WITH COMPRESSION
+  onImageSelected(event: any, type: 'service' | 'project'): void {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        // Compress image resolution to safe size (max 800px width/height)
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 600;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          // Compress to JPEG with 0.75 quality factor
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+          if (type === 'service') {
+            this.serviceForm.imageUrl = compressedBase64;
+          } else {
+            this.projectForm.image = compressedBase64;
+          }
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // TECH MULTISELECT ACTIONS
+  toggleTechnology(techName: string): void {
+    const idx = this.selectedTechnologies.indexOf(techName);
+    if (idx > -1) {
+      this.selectedTechnologies.splice(idx, 1);
+    } else {
+      this.selectedTechnologies.push(techName);
+    }
+  }
+
+  isTechSelected(techName: string): boolean {
+    return this.selectedTechnologies.includes(techName);
+  }
+
+  addCustomTechnology(): void {
+    const trimmed = this.customTechName.trim();
+    if (trimmed && !this.selectedTechnologies.includes(trimmed)) {
+      this.selectedTechnologies.push(trimmed);
+      this.customTechName = '';
+    }
+  }
+
   // SERVICES CRUD
   openAddService(): void {
     this.isEditingService = false;
+    this.selectedTechnologies = [];
     this.serviceForm = {
       id: '',
       title: '',
       description: '',
       imageUrl: '',
       imageAlt: '',
-      extendedInfoStr: '',
-      technologiesStr: ''
+      extendedInfoStr: ''
     };
     this.showServiceModal = true;
   }
 
   openEditService(service: ServiceItem): void {
     this.isEditingService = true;
+    this.selectedTechnologies = [...(service.technologies || [])];
     this.serviceForm = {
       id: service.id,
       title: service.title,
       description: service.description,
       imageUrl: service.imageUrl,
       imageAlt: service.imageAlt,
-      extendedInfoStr: (service.extendedInfo || []).join('\n'),
-      technologiesStr: (service.technologies || []).join(', ')
+      extendedInfoStr: (service.extendedInfo || []).join('\n')
     };
     this.showServiceModal = true;
   }
@@ -139,7 +217,7 @@ export class AdminComponent implements OnInit {
       imageUrl: this.serviceForm.imageUrl,
       imageAlt: this.serviceForm.imageAlt || this.serviceForm.title,
       extendedInfo: this.serviceForm.extendedInfoStr.split('\n').map(x => x.trim()).filter(x => x.length > 0),
-      technologies: this.serviceForm.technologiesStr.split(',').map(x => x.trim()).filter(x => x.length > 0)
+      technologies: this.selectedTechnologies
     };
 
     if (this.isEditingService) {
@@ -173,28 +251,34 @@ export class AdminComponent implements OnInit {
   // PROJECTS CRUD
   openAddProject(): void {
     this.isEditingProject = false;
+    this.selectedTechnologies = [];
     this.projectForm = {
       id: '',
       title: '',
       description: '',
       image: '',
-      technologiesStr: '',
       status: 'completado',
-      githubUrl: ''
+      githubUrl: '',
+      webUrl: '',
+      backendUrl: '',
+      apkUrl: ''
     };
     this.showProjectModal = true;
   }
 
   openEditProject(project: Project): void {
     this.isEditingProject = true;
+    this.selectedTechnologies = [...(project.technologies || [])];
     this.projectForm = {
       id: project.id,
       title: project.title,
       description: project.description,
       image: project.image,
-      technologiesStr: (project.technologies || []).join(', '),
       status: project.status,
-      githubUrl: project.githubUrl
+      githubUrl: project.githubUrl || '',
+      webUrl: project.webUrl || '',
+      backendUrl: project.backendUrl || '',
+      apkUrl: project.apkUrl || ''
     };
     this.showProjectModal = true;
   }
@@ -204,9 +288,12 @@ export class AdminComponent implements OnInit {
       title: this.projectForm.title,
       description: this.projectForm.description,
       image: this.projectForm.image,
-      technologies: this.projectForm.technologiesStr.split(',').map(x => x.trim()).filter(x => x.length > 0),
+      technologies: this.selectedTechnologies,
       status: this.projectForm.status,
-      githubUrl: this.projectForm.githubUrl
+      githubUrl: this.projectForm.githubUrl || null,
+      webUrl: this.projectForm.webUrl || null,
+      backendUrl: this.projectForm.backendUrl || null,
+      apkUrl: this.projectForm.apkUrl || null
     };
 
     if (this.isEditingProject) {

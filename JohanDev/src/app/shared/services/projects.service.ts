@@ -10,7 +10,10 @@ export interface Project {
   technologies: string[];
   status: 'completado' | 'en-progreso' | 'planificado';
   image: string;
-  githubUrl: string;
+  githubUrl?: string;
+  webUrl?: string;
+  backendUrl?: string;
+  apkUrl?: string;
 }
 
 @Injectable({

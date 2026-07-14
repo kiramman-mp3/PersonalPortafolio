@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
+import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
 
 @Component({
   selector: 'app-proyectos-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, FooterComponent],
+  imports: [CommonModule, RouterModule, FooterComponent, MarkdownPipe],
   templateUrl: './proyectos.component.html',
   styleUrl: './proyectos.component.scss'
 })
@@ -23,6 +25,14 @@ export class ProyectosComponent implements OnInit {
       this.projects = data;
       this.filteredProjects = data;
     });
+  }
+
+  getTechIcon(tech: string): string {
+    return getTechIcon(tech);
+  }
+
+  getTechColor(tech: string): string {
+    return getTechColor(tech);
   }
 
   setFilter(filter: string): void {

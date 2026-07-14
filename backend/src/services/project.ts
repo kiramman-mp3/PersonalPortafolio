@@ -7,7 +7,10 @@ interface ProjectCreateData {
     technologies: string[];
     status: 'completado' | 'en-progreso' | 'planificado';
     image: string;
-    githubUrl: string;
+    githubUrl?: string;
+    webUrl?: string;
+    backendUrl?: string;
+    apkUrl?: string;
 }
 
 interface ProjectEditData {
@@ -17,6 +20,9 @@ interface ProjectEditData {
     status?: 'completado' | 'en-progreso' | 'planificado';
     image?: string;
     githubUrl?: string;
+    webUrl?: string;
+    backendUrl?: string;
+    apkUrl?: string;
 }
 
 export class ProjectsService {

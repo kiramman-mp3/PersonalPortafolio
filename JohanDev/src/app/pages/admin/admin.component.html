@@ -132,10 +132,18 @@
         <div class="form-group">
           <label>Descripción Corta *</label>
           <textarea [(ngModel)]="serviceForm.description" name="description" required></textarea>
+          <span class="hint-label">* Soporta Markdown (p. ej., **negrita**, *cursiva*, [enlace](url), `código`)</span>
         </div>
         <div class="form-group">
-          <label>URL de Imagen *</label>
-          <input type="text" [(ngModel)]="serviceForm.imageUrl" name="imageUrl" required />
+          <label>Imagen del Servicio *</label>
+          <div class="image-upload-wrapper">
+            <input type="file" (change)="onImageSelected($event, 'service')" accept="image/*" class="file-input" />
+            <div class="or-separator">O introduce una URL:</div>
+            <input type="text" [(ngModel)]="serviceForm.imageUrl" name="imageUrl" placeholder="https://..." />
+          </div>
+          <div *ngIf="serviceForm.imageUrl" class="image-preview-thumbnail">
+            <img [src]="serviceForm.imageUrl" alt="Preview" />
+          </div>
         </div>
         <div class="form-group">
           <label>Texto Alt de Imagen</label>
@@ -145,10 +153,32 @@
           <label>Información Extendida (Una línea por cada beneficio/punto)</label>
           <textarea [(ngModel)]="serviceForm.extendedInfoStr" name="extendedInfo" placeholder="Punto 1&#10;Punto 2"></textarea>
         </div>
+        
+        <!-- Technologies Selector -->
         <div class="form-group">
-          <label>Tecnologías (Separadas por comas)</label>
-          <input type="text" [(ngModel)]="serviceForm.technologiesStr" name="technologies" placeholder="Figma, React, Angular" />
+          <label>Tecnologías Relacionadas</label>
+          <div class="tech-select-container">
+            <div class="tech-select-grid">
+              <button type="button" *ngFor="let tech of techMasterList" 
+                      (click)="toggleTechnology(tech.name)" 
+                      [class.selected]="isTechSelected(tech.name)" 
+                      class="tech-select-btn">
+                <i [class]="tech.icon"></i> {{ tech.name }}
+              </button>
+            </div>
+            <div class="custom-tech-input-row">
+              <input type="text" [(ngModel)]="customTechName" name="customTech" placeholder="Tecnología personalizada" />
+              <button type="button" (click)="addCustomTechnology()" class="btn-add-custom-tech">Añadir</button>
+            </div>
+            <div class="selected-techs-summary" *ngIf="selectedTechnologies.length > 0">
+              <span class="summary-label">Seleccionadas:</span>
+              <span *ngFor="let s of selectedTechnologies" class="selected-tech-badge">
+                {{ s }} <i class="fas fa-times remove-tech-icon" (click)="toggleTechnology(s)"></i>
+              </span>
+            </div>
+          </div>
         </div>
+
         <div class="modal-actions">
           <button type="button" (click)="showServiceModal = false" class="btn-cancel">Cancelar</button>
           <button type="submit" class="btn-save">Guardar</button>
@@ -172,10 +202,18 @@
         <div class="form-group">
           <label>Descripción *</label>
           <textarea [(ngModel)]="projectForm.description" name="description" required></textarea>
+          <span class="hint-label">* Soporta Markdown (p. ej., **negrita**, *cursiva*, [enlace](url), `código`)</span>
         </div>
         <div class="form-group">
-          <label>URL de Imagen *</label>
-          <input type="text" [(ngModel)]="projectForm.image" name="image" required />
+          <label>Imagen del Proyecto *</label>
+          <div class="image-upload-wrapper">
+            <input type="file" (change)="onImageSelected($event, 'project')" accept="image/*" class="file-input" />
+            <div class="or-separator">O introduce una URL:</div>
+            <input type="text" [(ngModel)]="projectForm.image" name="image" placeholder="https://..." />
+          </div>
+          <div *ngIf="projectForm.image" class="image-preview-thumbnail">
+            <img [src]="projectForm.image" alt="Preview" />
+          </div>
         </div>
         <div class="form-group">
           <label>Estado *</label>
@@ -185,14 +223,50 @@
             <option value="planificado">Planificado</option>
           </select>
         </div>
+
+        <!-- Links fields -->
         <div class="form-group">
-          <label>URL de GitHub *</label>
-          <input type="text" [(ngModel)]="projectForm.githubUrl" name="githubUrl" required />
+          <label>URL de GitHub (Opcional)</label>
+          <input type="text" [(ngModel)]="projectForm.githubUrl" name="githubUrl" placeholder="https://github.com/..." />
         </div>
         <div class="form-group">
-          <label>Tecnologías (Separadas por comas)</label>
-          <input type="text" [(ngModel)]="projectForm.technologiesStr" name="technologies" placeholder="Laravel, MySQL, JavaScript" />
+          <label>URL de Sitio Web (Opcional)</label>
+          <input type="text" [(ngModel)]="projectForm.webUrl" name="webUrl" placeholder="https://..." />
         </div>
+        <div class="form-group">
+          <label>URL de API Backend (Opcional)</label>
+          <input type="text" [(ngModel)]="projectForm.backendUrl" name="backendUrl" placeholder="https://..." />
+        </div>
+        <div class="form-group">
+          <label>Enlace de APK Descargable (Opcional)</label>
+          <input type="text" [(ngModel)]="projectForm.apkUrl" name="apkUrl" placeholder="https://..." />
+        </div>
+
+        <!-- Technologies Selector -->
+        <div class="form-group">
+          <label>Tecnologías Utilizadas</label>
+          <div class="tech-select-container">
+            <div class="tech-select-grid">
+              <button type="button" *ngFor="let tech of techMasterList" 
+                      (click)="toggleTechnology(tech.name)" 
+                      [class.selected]="isTechSelected(tech.name)" 
+                      class="tech-select-btn">
+                <i [class]="tech.icon"></i> {{ tech.name }}
+              </button>
+            </div>
+            <div class="custom-tech-input-row">
+              <input type="text" [(ngModel)]="customTechName" name="customTech" placeholder="Tecnología personalizada" />
+              <button type="button" (click)="addCustomTechnology()" class="btn-add-custom-tech">Añadir</button>
+            </div>
+            <div class="selected-techs-summary" *ngIf="selectedTechnologies.length > 0">
+              <span class="summary-label">Seleccionadas:</span>
+              <span *ngFor="let s of selectedTechnologies" class="selected-tech-badge">
+                {{ s }} <i class="fas fa-times remove-tech-icon" (click)="toggleTechnology(s)"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+
         <div class="modal-actions">
           <button type="button" (click)="showProjectModal = false" class="btn-cancel">Cancelar</button>
           <button type="submit" class="btn-save">Guardar</button>

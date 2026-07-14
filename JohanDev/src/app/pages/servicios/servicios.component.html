@@ -29,7 +29,7 @@
             <h2 class="service-card-title">{{ service.title }}</h2>
           </div>
 
-          <p class="service-main-desc">{{ service.description }}</p>
+          <p class="service-main-desc" [innerHTML]="service.description | markdown"></p>
 
           <div class="service-extended-list" *ngIf="service.extendedInfo && service.extendedInfo.length > 0">
             <div *ngFor="let info of service.extendedInfo" class="extended-item">
@@ -41,7 +41,9 @@
           <div class="tech-tags-wrapper" *ngIf="service.technologies && service.technologies.length > 0">
             <h3 class="tech-title">Tecnologías Clave:</h3>
             <div class="tech-tags">
-              <span *ngFor="let tech of service.technologies" class="tech-tag">{{ tech }}</span>
+              <span *ngFor="let tech of service.technologies" class="tech-tag">
+                <i [class]="getTechIcon(tech)" [style.color]="getTechColor(tech)"></i> {{ tech }}
+              </span>
             </div>
           </div>
           

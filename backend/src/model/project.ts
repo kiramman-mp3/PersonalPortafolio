@@ -17,7 +17,10 @@ export class ProjectModel {
         technologies: string[];
         status: string;
         image: string;
-        githubUrl: string;
+        githubUrl?: string;
+        webUrl?: string;
+        backendUrl?: string;
+        apkUrl?: string;
     }) {
         return prisma.projects.create({
             data
@@ -30,6 +33,9 @@ export class ProjectModel {
         status?: string;
         image?: string;
         githubUrl?: string;
+        webUrl?: string;
+        backendUrl?: string;
+        apkUrl?: string;
     }) {
         try {
             return prisma.projects.update({
