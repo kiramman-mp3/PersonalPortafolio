@@ -101,13 +101,4 @@ export class ProyectosComponent implements OnInit {
         return '';
     }
   }
-
-  getShortDescription(project: Project): string {
-    if (project.shortDescription) return project.shortDescription;
-    const clean = project.description
-      .replace(/[#*`~_\-]/g, '')
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-      .trim();
-    return clean.length > 120 ? clean.slice(0, 120) + '...' : clean;
-  }
 }

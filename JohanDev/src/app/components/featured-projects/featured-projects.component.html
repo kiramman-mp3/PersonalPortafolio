@@ -17,7 +17,7 @@
               <span>{{ getStatusText(project.status) }}</span>
             </div>
           </div>
-          <p class="project-description">{{ getShortDescription(project) }}</p>
+          <p class="project-description">{{ project.shortDescription }}</p>
           <div class="project-footer">
             <div class="project-tech">
               <span *ngFor="let tech of project.technologies.slice(0, 3)" class="tech-tag">
