@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -17,14 +17,22 @@ export class ProyectosComponent implements OnInit {
   projects: Project[] = [];
   filteredProjects: Project[] = [];
   currentFilter = 'todos';
+  isBrowser = false;
 
-  constructor(private projectsService: ProjectsService) {}
+  constructor(
+    private projectsService: ProjectsService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit(): void {
-    this.projectsService.getProjects().subscribe(data => {
-      this.projects = data;
-      this.filteredProjects = data;
-    });
+    if (this.isBrowser) {
+      this.projectsService.getProjects().subscribe(data => {
+        this.projects = data;
+        this.filteredProjects = data;
+      });
+    }
   }
 
   getTechIcon(tech: string): string {

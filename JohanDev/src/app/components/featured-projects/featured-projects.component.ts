@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
 
@@ -12,13 +12,21 @@ import { ProjectsService, Project } from '../../shared/services/projects.service
 })
 export class FeaturedProjectsComponent implements OnInit {
   featuredProjects: Project[] = [];
+  isBrowser = false;
 
-  constructor(private projectsService: ProjectsService) {}
+  constructor(
+    private projectsService: ProjectsService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit(): void {
-    this.projectsService.getProjects().subscribe(projects => {
-      this.featuredProjects = projects;
-    });
+    if (this.isBrowser) {
+      this.projectsService.getProjects().subscribe(projects => {
+        this.featuredProjects = projects;
+      });
+    }
   }
 
   getStatusBadgeClass(status: string): string {

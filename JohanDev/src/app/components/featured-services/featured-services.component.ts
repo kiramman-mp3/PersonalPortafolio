@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ServicesService, ServiceItem } from '../../shared/services/services.service';
 
@@ -12,13 +12,21 @@ import { ServicesService, ServiceItem } from '../../shared/services/services.ser
 })
 export class FeaturedServicesComponent implements OnInit {
   featuredServices: ServiceItem[] = [];
+  isBrowser = false;
 
-  constructor(private servicesService: ServicesService) {}
+  constructor(
+    private servicesService: ServicesService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit(): void {
-    this.servicesService.getServices().subscribe(services => {
-      this.featuredServices = services;
-    });
+    if (this.isBrowser) {
+      this.servicesService.getServices().subscribe(services => {
+        this.featuredServices = services;
+      });
+    }
   }
 
   getServiceIcon(id: string): string {

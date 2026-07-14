@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ServicesService, ServiceItem } from '../../shared/services/services.service';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -15,13 +15,21 @@ import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
 })
 export class ServiciosComponent implements OnInit {
   services: ServiceItem[] = [];
+  isBrowser = false;
 
-  constructor(private servicesService: ServicesService) {}
+  constructor(
+    private servicesService: ServicesService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit(): void {
-    this.servicesService.getServices().subscribe(data => {
-      this.services = data;
-    });
+    if (this.isBrowser) {
+      this.servicesService.getServices().subscribe(data => {
+        this.services = data;
+      });
+    }
   }
 
   getTechIcon(tech: string): string {
