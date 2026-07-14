@@ -1,25 +1,25 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
 import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
 
 @Component({
-  selector: 'app-proyectos-page',
+  selector: 'app-proyecto-detalle',
   standalone: true,
-  imports: [CommonModule, RouterModule, FooterComponent],
-  templateUrl: './proyectos.component.html',
-  styleUrl: './proyectos.component.scss'
+  imports: [CommonModule, RouterModule, FooterComponent, MarkdownPipe],
+  templateUrl: './proyecto-detalle.component.html',
+  styleUrl: './proyecto-detalle.component.scss'
 })
-export class ProyectosComponent implements OnInit {
-  projects: Project[] = [];
-  filteredProjects: Project[] = [];
-  currentFilter = 'todos';
-  isBrowser = false;
+export class ProyectoDetalleComponent implements OnInit {
+  project?: Project;
   isLoading = true;
+  isBrowser = false;
 
   constructor(
+    private route: ActivatedRoute,
     private projectsService: ProjectsService,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
@@ -29,18 +29,23 @@ export class ProyectosComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.isBrowser) {
-      this.projectsService.getProjects().subscribe({
-        next: (data) => {
-          this.projects = data;
-          this.filteredProjects = data;
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        },
-        error: () => {
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        }
-      });
+      const id = this.route.snapshot.paramMap.get('id');
+      if (id) {
+        this.projectsService.getProjectById(id).subscribe({
+          next: (data) => {
+            this.project = data;
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Failed to load project details', err);
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          }
+        });
+      } else {
+        this.isLoading = false;
+      }
     } else {
       this.isLoading = false;
     }
@@ -54,16 +59,8 @@ export class ProyectosComponent implements OnInit {
     return getTechColor(tech);
   }
 
-  setFilter(filter: string): void {
-    this.currentFilter = filter;
-    if (filter === 'todos') {
-      this.filteredProjects = this.projects;
-    } else {
-      this.filteredProjects = this.projects.filter(p => p.status === filter);
-    }
-  }
-
-  getStatusBadgeClass(status: string): string {
+  getStatusBadgeClass(status?: string): string {
+    if (!status) return '';
     switch (status) {
       case 'completado':
         return 'badge-completed';
@@ -76,7 +73,8 @@ export class ProyectosComponent implements OnInit {
     }
   }
 
-  getStatusText(status: string): string {
+  getStatusText(status?: string): string {
+    if (!status) return '';
     switch (status) {
       case 'completado':
         return 'Completado';
@@ -89,7 +87,8 @@ export class ProyectosComponent implements OnInit {
     }
   }
 
-  getStatusIcon(status: string): string {
+  getStatusIcon(status?: string): string {
+    if (!status) return '';
     switch (status) {
       case 'completado':
         return 'fa-check';

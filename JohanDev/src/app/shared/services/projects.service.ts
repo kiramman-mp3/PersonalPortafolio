@@ -6,6 +6,7 @@ import { catchError } from 'rxjs/operators';
 export interface Project {
   id: any;
   title: string;
+  shortDescription: string;
   description: string;
   technologies: string[];
   status: 'completado' | 'en-progreso' | 'planificado';
@@ -26,7 +27,8 @@ export class ProjectsService {
     {
       id: 1,
       title: 'Proyecto Final Web',
-      description: 'Plataforma web full stack para gestión de reservas hoteleras con panel administrativo y autenticación basada en roles.',
+      shortDescription: 'Plataforma web full stack para gestión de reservas hoteleras con panel administrativo.',
+      description: '# Proyecto Final Web 🏨\n\nEste es un proyecto completo desarrollado para la materia de Programación Web. Permite la gestión de reservas de habitaciones de hotel con control de roles.\n\n### Características Clave\n* Autenticación basada en roles (Admin/User).\n* Pasarela de pagos simulada.\n* Reportes avanzados.',
       technologies: ['Laravel', 'PHP', 'MySQL', 'Blade', 'JavaScript'],
       status: 'completado',
       image: '/img/Web.png',
@@ -35,7 +37,8 @@ export class ProjectsService {
     {
       id: 2,
       title: 'Proyecto Final Distribuidas',
-      description: 'Marketplace digital con arquitectura de microservicios, incluyendo sistema de pagos integrado y gateway API.',
+      shortDescription: 'Marketplace digital con arquitectura de microservicios y pasarela de pagos integrada.',
+      description: '# Marketplace de Microservicios 🛒\n\nSolución distribuida para la compra y venta de artículos digitales con soporte para alta concurrencia.\n\n### Arquitectura\n* Microservicios con .NET Core.\n* Base de datos independiente por servicio.\n* Docker Compose para levantar el stack.',
       technologies: ['C#', '.NET Core', 'JavaScript', 'React', 'Docker'],
       status: 'en-progreso',
       image: '/img/Distribuidas.png',
@@ -44,7 +47,8 @@ export class ProjectsService {
     {
       id: 3,
       title: 'Proyecto GPIS',
-      description: 'Sistema de gestión e información con arquitectura escalable y base de datos optimizada para grandes volúmenes de datos.',
+      shortDescription: 'Sistema de gestión de información con base de datos optimizada para gran escala.',
+      description: '# Sistema GPIS 📊\n\nSoftware empresarial para la optimización de procesos de logística y reportes contables.\n\n### Tecnologías\n* Frontend responsivo en React.\n* Backend robusto en Node.js.\n* PostgreSQL con índices optimizados.',
       technologies: ['TypeScript', 'Node.js', 'PostgreSQL', 'React', 'AWS'],
       status: 'completado',
       image: '/img/GPIS.png',
@@ -59,6 +63,17 @@ export class ProjectsService {
       catchError(() => {
         console.warn('Failed to fetch projects from backend, using local fallbacks');
         return of(this.fallbackProjects);
+      })
+    );
+  }
+
+  getProjectById(id: string | number): Observable<Project> {
+    return this.http.get<Project>(`${this.apiUrl}/${id}`).pipe(
+      catchError(() => {
+        console.warn(`Failed to fetch project ${id} from backend, searching in local fallbacks`);
+        const local = this.fallbackProjects.find(p => String(p.id) === String(id));
+        if (local) return of(local);
+        throw new Error('Project not found');
       })
     );
   }

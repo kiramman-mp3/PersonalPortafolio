@@ -23,16 +23,17 @@ model Services {
 }
 
 model Projects {
-  id           Int      @id @default(autoincrement())
-  title        String   @db.VarChar(100)
-  description  String   @db.Text
-  technologies String[] @db.VarChar(255)
-  status       String   @db.VarChar(50) // 'completado' | 'en-progreso' | 'planificado'
-  image        String   @db.Text
-  githubUrl    String?  @db.VarChar(255)
-  webUrl       String?  @db.VarChar(255)
-  backendUrl   String?  @db.VarChar(255)
-  apkUrl       String?  @db.VarChar(255)
+  id               Int      @id @default(autoincrement())
+  title            String   @db.VarChar(100)
+  shortDescription String   @db.VarChar(255) @default("")
+  description      String   @db.Text
+  technologies     String[] @db.VarChar(255)
+  status           String   @db.VarChar(50) // 'completado' | 'en-progreso' | 'planificado'
+  image            String   @db.Text
+  githubUrl        String?  @db.VarChar(255)
+  webUrl           String?  @db.VarChar(255)
+  backendUrl       String?  @db.VarChar(255)
+  apkUrl           String?  @db.VarChar(255)
 }
 
 model Contacts {

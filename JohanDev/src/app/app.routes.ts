@@ -3,6 +3,7 @@ import { Home } from './pages/home/home';
 import { ContactComponent } from './components/contact/contact.component';
 import { ServiciosComponent } from './pages/servicios/servicios.component';
 import { ProyectosComponent } from './pages/proyectos/proyectos.component';
+import { ProyectoDetalleComponent } from './pages/proyecto-detalle/proyecto-detalle.component';
 import { AdminComponent } from './pages/admin/admin.component';
 
 export const routes: Routes = [
@@ -21,6 +22,10 @@ export const routes: Routes = [
   {
     path: 'proyectos',
     component: ProyectosComponent
+  },
+  {
+    path: 'proyectos/:id',
+    component: ProyectoDetalleComponent
   },
   {
     path: 'admin',

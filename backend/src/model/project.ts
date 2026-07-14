@@ -13,6 +13,7 @@ export class ProjectModel {
     }
     static async create(data: {
         title: string;
+        shortDescription: string;
         description: string;
         technologies: string[];
         status: string;
@@ -28,6 +29,7 @@ export class ProjectModel {
     }
     static async update(id: number, data: {
         title?: string;
+        shortDescription?: string;
         description?: string;
         technologies?: string[];
         status?: string;

@@ -48,6 +48,7 @@ export class AdminComponent implements OnInit {
   projectForm = {
     id: '',
     title: '',
+    shortDescription: '',
     description: '',
     image: '',
     status: 'completado' as 'completado' | 'en-progreso' | 'planificado',
@@ -255,6 +256,7 @@ export class AdminComponent implements OnInit {
     this.projectForm = {
       id: '',
       title: '',
+      shortDescription: '',
       description: '',
       image: '',
       status: 'completado',
@@ -272,6 +274,7 @@ export class AdminComponent implements OnInit {
     this.projectForm = {
       id: project.id,
       title: project.title,
+      shortDescription: project.shortDescription || '',
       description: project.description,
       image: project.image,
       status: project.status,
@@ -286,6 +289,7 @@ export class AdminComponent implements OnInit {
   saveProject(): void {
     const projectData = {
       title: this.projectForm.title,
+      shortDescription: this.projectForm.shortDescription,
       description: this.projectForm.description,
       image: this.projectForm.image,
       technologies: this.selectedTechnologies,

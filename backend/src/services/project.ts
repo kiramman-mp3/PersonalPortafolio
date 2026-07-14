@@ -3,6 +3,7 @@ import { ProjectModel } from "../model/project.ts";
 
 interface ProjectCreateData {
     title: string;
+    shortDescription: string;
     description: string;
     technologies: string[];
     status: 'completado' | 'en-progreso' | 'planificado';
@@ -15,6 +16,7 @@ interface ProjectCreateData {
 
 interface ProjectEditData {
     title?: string;
+    shortDescription?: string;
     description?: string;
     technologies?: string[];
     status?: 'completado' | 'en-progreso' | 'planificado';

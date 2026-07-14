@@ -466,6 +466,52 @@
   }
 }
 
+.view-more-detail-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding-bottom: 2px;
+  transition: color 0.2s ease, gap 0.2s ease;
+  margin-top: 0.25rem;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(77, 53, 255, 0.9), rgba(168, 85, 247, 0.9));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+    opacity: 0.9;
+  }
+
+  &:hover {
+    color: var(--purple-bright);
+    gap: 0.65rem;
+
+    &::after {
+      transform: scaleX(1);
+    }
+
+    i {
+      transform: translateX(4px);
+    }
+  }
+
+  i {
+    transition: transform 0.2s ease;
+    font-size: 0.8rem;
+  }
+}
+
 /* Empty State */
 .empty-projects-state {
   text-align: center;

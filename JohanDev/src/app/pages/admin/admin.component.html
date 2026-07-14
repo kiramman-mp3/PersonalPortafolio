@@ -98,7 +98,7 @@
                     {{ p.status }}
                   </span>
                 </td>
-                <td class="desc-cell">{{ p.description }}</td>
+                <td class="desc-cell">{{ p.shortDescription }}</td>
                 <td class="actions-cell">
                   <button (click)="openEditProject(p)" class="btn-edit" title="Editar">
                     <i class="fas fa-edit"></i>
@@ -198,6 +198,10 @@
         <div class="form-group">
           <label>Título *</label>
           <input type="text" [(ngModel)]="projectForm.title" name="title" required />
+        </div>
+        <div class="form-group">
+          <label>Descripción Corta * (Máx. 255 caracteres)</label>
+          <input type="text" [(ngModel)]="projectForm.shortDescription" name="shortDescription" maxlength="255" required />
         </div>
         <div class="form-group">
           <label>Descripción *</label>
