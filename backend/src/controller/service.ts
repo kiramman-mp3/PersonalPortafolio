@@ -16,7 +16,7 @@ export class ServiceController {
 
     static async getOne(req: Request, res: Response) {
         try {
-            const id = req.params.id;
+            const id = req.params.id as string;
             const service = await ServicesService.getService(id);
             res.status(200).json(service);
         } catch (error) {
@@ -40,7 +40,7 @@ export class ServiceController {
 
     static async update(req: Request, res: Response) {
         try {
-            const id = req.params.id;
+            const id = req.params.id as string;
             const service = await ServicesService.updateService(id, req.body);
             res.status(200).json(service);
         } catch (error) {
@@ -53,7 +53,7 @@ export class ServiceController {
 
     static async delete(req: Request, res: Response) {
         try {
-            const id = req.params.id;
+            const id = req.params.id as string;
             await ServicesService.deleteService(id);
             res.status(200).json({ message: "Service deleted successfully" });
         } catch (error) {
