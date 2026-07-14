@@ -17,7 +17,7 @@
     </div>
 
     <!-- Dashboard View -->
-    <div *ngIf="isLoggedIn" class="admin-dashboard">
+    <div *ngIf="isLoggedIn && !showProjectModal" class="admin-dashboard">
       <div class="dashboard-header">
         <h1>Administración</h1>
         <button (click)="onLogout()" class="btn-logout">
@@ -187,96 +187,144 @@
     </div>
   </div>
 
-  <!-- Project Modal -->
-  <div *ngIf="showProjectModal" class="modal-overlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>{{ isEditingProject ? 'Editar Proyecto' : 'Nuevo Proyecto' }}</h3>
-        <button (click)="showProjectModal = false" class="close-modal">&times;</button>
-      </div>
-      <form (submit)="saveProject(); $event.preventDefault()" class="admin-form">
-        <div class="form-group">
-          <label>Título *</label>
-          <input type="text" [(ngModel)]="projectForm.title" name="title" required />
-        </div>
-        <div class="form-group">
-          <label>Descripción Corta * (Máx. 255 caracteres)</label>
-          <input type="text" [(ngModel)]="projectForm.shortDescription" name="shortDescription" maxlength="255" required />
-        </div>
-        <div class="form-group">
-          <label>Descripción *</label>
-          <textarea [(ngModel)]="projectForm.description" name="description" required></textarea>
-          <span class="hint-label">* Soporta Markdown (p. ej., **negrita**, *cursiva*, [enlace](url), `código`)</span>
-        </div>
-        <div class="form-group">
-          <label>Imagen del Proyecto *</label>
-          <div class="image-upload-wrapper">
-            <input type="file" (change)="onImageSelected($event, 'project')" accept="image/*" class="file-input" />
-            <div class="or-separator">O introduce una URL:</div>
-            <input type="text" [(ngModel)]="projectForm.image" name="image" placeholder="https://..." />
-          </div>
-          <div *ngIf="projectForm.image" class="image-preview-thumbnail">
-            <img [src]="projectForm.image" alt="Preview" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Estado *</label>
-          <select [(ngModel)]="projectForm.status" name="status" required>
-            <option value="completado">Completado</option>
-            <option value="en-progreso">En Progreso</option>
-            <option value="planificado">Planificado</option>
-          </select>
-        </div>
-
-        <!-- Links fields -->
-        <div class="form-group">
-          <label>URL de GitHub (Opcional)</label>
-          <input type="text" [(ngModel)]="projectForm.githubUrl" name="githubUrl" placeholder="https://github.com/..." />
-        </div>
-        <div class="form-group">
-          <label>URL de Sitio Web (Opcional)</label>
-          <input type="text" [(ngModel)]="projectForm.webUrl" name="webUrl" placeholder="https://..." />
-        </div>
-        <div class="form-group">
-          <label>URL de API Backend (Opcional)</label>
-          <input type="text" [(ngModel)]="projectForm.backendUrl" name="backendUrl" placeholder="https://..." />
-        </div>
-        <div class="form-group">
-          <label>Enlace de APK Descargable (Opcional)</label>
-          <input type="text" [(ngModel)]="projectForm.apkUrl" name="apkUrl" placeholder="https://..." />
-        </div>
-
-        <!-- Technologies Selector -->
-        <div class="form-group">
-          <label>Tecnologías Utilizadas</label>
-          <div class="tech-select-container">
-            <div class="tech-select-grid">
-              <button type="button" *ngFor="let tech of techMasterList" 
-                      (click)="toggleTechnology(tech.name)" 
-                      [class.selected]="isTechSelected(tech.name)" 
-                      class="tech-select-btn">
-                <i [class]="tech.icon"></i> {{ tech.name }}
-              </button>
-            </div>
-            <div class="custom-tech-input-row">
-              <input type="text" [(ngModel)]="customTechName" name="customTech" placeholder="Tecnología personalizada" />
-              <button type="button" (click)="addCustomTechnology()" class="btn-add-custom-tech">Añadir</button>
-            </div>
-            <div class="selected-techs-summary" *ngIf="selectedTechnologies.length > 0">
-              <span class="summary-label">Seleccionadas:</span>
-              <span *ngFor="let s of selectedTechnologies" class="selected-tech-badge">
-                {{ s }} <i class="fas fa-times remove-tech-icon" (click)="toggleTechnology(s)"></i>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-actions">
-          <button type="button" (click)="showProjectModal = false" class="btn-cancel">Cancelar</button>
-          <button type="submit" class="btn-save">Guardar</button>
-        </div>
-      </form>
+  <!-- Full-Page Project Form -->
+  <div *ngIf="isLoggedIn && showProjectModal" class="admin-full-page-form">
+    <div class="form-header">
+      <h2>{{ isEditingProject ? 'Editar Proyecto' : 'Nuevo Proyecto' }}</h2>
+      <button (click)="showProjectModal = false" class="btn-back-dashboard">
+        <i class="fas fa-arrow-left"></i> Volver al Panel
+      </button>
     </div>
+    
+    <form (submit)="saveProject(); $event.preventDefault()" class="admin-form-full">
+      <div class="form-columns-grid">
+        
+        <!-- Left Column: Primary content (Title, short desc, markdown) -->
+        <div class="form-col-left">
+          <div class="form-card">
+            <div class="form-group">
+              <label>Título del Proyecto *</label>
+              <input type="text" [(ngModel)]="projectForm.title" name="title" placeholder="Ej. TunguMarket" required />
+            </div>
+            
+            <div class="form-group">
+              <label>Descripción Corta * (Máx. 255 caracteres)</label>
+              <input type="text" [(ngModel)]="projectForm.shortDescription" name="shortDescription" maxlength="255" placeholder="Una breve descripción para la tarjeta..." required />
+            </div>
+
+            <!-- Markdown Editor & Preview Tabs -->
+            <div class="form-group markdown-editor-group">
+              <div class="markdown-header-row">
+                <label>Descripción Larga (Markdown) *</label>
+                <div class="markdown-tabs">
+                  <button type="button" (click)="editorMode = 'write'" [class.active]="editorMode === 'write'">Escribir</button>
+                  <button type="button" (click)="editorMode = 'preview'" [class.active]="editorMode === 'preview'">Vista Previa</button>
+                </div>
+              </div>
+              
+              <!-- Textarea editor -->
+              <div *ngIf="editorMode === 'write'" class="editor-textarea-wrapper">
+                <textarea [(ngModel)]="projectForm.description" name="description" placeholder="# Título del Proyecto&#10;&#10;Escribe aquí la descripción usando Markdown..." required></textarea>
+                <span class="hint-label">* Soporta sintaxis GitHub Flavored Markdown (títulos, tablas, listas, enlaces, imágenes embebidas)</span>
+              </div>
+              
+              <!-- Markdown Live Preview -->
+              <div *ngIf="editorMode === 'preview'" class="editor-preview-wrapper project-rich-description" [innerHTML]="projectForm.description | markdown">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Column: Metadata, links, image and technologies -->
+        <div class="form-col-right">
+          
+          <!-- Image upload and state -->
+          <div class="form-card">
+            <h3 class="card-subtitle"><i class="fas fa-image"></i> Imagen y Estado</h3>
+            
+            <div class="form-group">
+              <label>Imagen del Proyecto *</label>
+              <div class="image-upload-wrapper">
+                <div class="file-select-area">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span>Subir Imagen (Compresión automática)</span>
+                  <input type="file" (change)="onImageSelected($event, 'project')" accept="image/*" class="file-input" />
+                </div>
+                <div class="or-separator">O introduce una URL directa:</div>
+                <input type="text" [(ngModel)]="projectForm.image" name="image" placeholder="https://..." />
+              </div>
+              <div *ngIf="projectForm.image" class="image-preview-thumbnail-full">
+                <img [src]="projectForm.image" alt="Preview" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Estado del Proyecto *</label>
+              <select [(ngModel)]="projectForm.status" name="status" required>
+                <option value="completado">Completado</option>
+                <option value="en-progreso">En Progreso</option>
+                <option value="planificado">Planificado</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Action Links -->
+          <div class="form-card">
+            <h3 class="card-subtitle"><i class="fas fa-link"></i> Enlaces de Acción</h3>
+            <div class="links-form-grid">
+              <div class="form-group">
+                <label><i class="fab fa-github"></i> URL de GitHub</label>
+                <input type="text" [(ngModel)]="projectForm.githubUrl" name="githubUrl" placeholder="https://github.com/..." />
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-globe"></i> URL de Sitio Web</label>
+                <input type="text" [(ngModel)]="projectForm.webUrl" name="webUrl" placeholder="https://..." />
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-server"></i> URL de API Backend</label>
+                <input type="text" [(ngModel)]="projectForm.backendUrl" name="backendUrl" placeholder="https://..." />
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-mobile-screen-button"></i> Enlace APK (Android)</label>
+                <input type="text" [(ngModel)]="projectForm.apkUrl" name="apkUrl" placeholder="https://..." />
+              </div>
+            </div>
+          </div>
+
+          <!-- Technologies Selector -->
+          <div class="form-card">
+            <h3 class="card-subtitle"><i class="fas fa-layer-group"></i> Tecnologías</h3>
+            <div class="tech-select-container">
+              <div class="tech-select-grid">
+                <button type="button" *ngFor="let tech of techMasterList" 
+                        (click)="toggleTechnology(tech.name)" 
+                        [class.selected]="isTechSelected(tech.name)" 
+                        class="tech-select-btn">
+                  <i [class]="tech.icon"></i> {{ tech.name }}
+                </button>
+              </div>
+              <div class="custom-tech-input-row">
+                <input type="text" [(ngModel)]="customTechName" name="customTech" placeholder="Personalizada" />
+                <button type="button" (click)="addCustomTechnology()" class="btn-add-custom-tech">Añadir</button>
+              </div>
+              <div class="selected-techs-summary" *ngIf="selectedTechnologies.length > 0">
+                <span class="summary-label">Seleccionadas:</span>
+                <span *ngFor="let s of selectedTechnologies" class="selected-tech-badge">
+                  {{ s }} <i class="fas fa-times remove-tech-icon" (click)="toggleTechnology(s)"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+      </div>
+
+      <div class="form-sticky-footer">
+        <button type="button" (click)="showProjectModal = false" class="btn-cancel-large">Cancelar</button>
+        <button type="submit" class="btn-save-large">Guardar Cambios</button>
+      </div>
+    </form>
   </div>
 
 </section>

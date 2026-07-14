@@ -7,8 +7,8 @@ export const ProjectSchema = z.object({
     technologies: z.array(z.string().min(1).max(255)),
     status: z.enum(['completado', 'en-progreso', 'planificado']),
     image: z.string().min(1),
-    githubUrl: z.string().max(255).optional().or(z.literal('')),
-    webUrl: z.string().max(255).optional().or(z.literal('')),
-    backendUrl: z.string().max(255).optional().or(z.literal('')),
-    apkUrl: z.string().max(255).optional().or(z.literal('')),
+    githubUrl: z.string().max(255).nullish().or(z.literal('')),
+    webUrl: z.string().max(255).nullish().or(z.literal('')),
+    backendUrl: z.string().max(255).nullish().or(z.literal('')),
+    apkUrl: z.string().max(255).nullish().or(z.literal('')),
 });

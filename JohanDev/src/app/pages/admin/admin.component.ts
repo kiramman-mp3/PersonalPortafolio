@@ -5,11 +5,13 @@ import { HttpClient } from '@angular/common/http';
 import { ServicesService, ServiceItem } from '../../shared/services/services.service';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
 import { TECH_MASTER_LIST } from '../../shared/constants/tech-list';
+import { getBaseApiUrl } from '../../shared/constants/api-url';
+import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MarkdownPipe],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
@@ -19,6 +21,7 @@ export class AdminComponent implements OnInit {
   loginError = '';
 
   activeTab: 'services' | 'projects' = 'services';
+  editorMode: 'write' | 'preview' = 'write';
   
   services: ServiceItem[] = [];
   projects: Project[] = [];
@@ -77,7 +80,7 @@ export class AdminComponent implements OnInit {
 
   onLogin(): void {
     this.loginError = '';
-    this.http.post<any>('https://personalportafolio-production.up.railway.app/admin/login', { password: this.password })
+    this.http.post<any>(`${getBaseApiUrl()}/admin/login`, { password: this.password })
       .subscribe({
         next: (res) => {
           if (res && res.success && res.token) {

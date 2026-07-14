@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+import { getBaseApiUrl } from '../constants/api-url';
+
 export interface Project {
   id: any;
   title: string;
@@ -21,7 +23,7 @@ export interface Project {
   providedIn: 'root'
 })
 export class ProjectsService {
-  private apiUrl = 'https://personalportafolio-production.up.railway.app/projects';
+  private apiUrl = `${getBaseApiUrl()}/projects`;
 
   private fallbackProjects: Project[] = [
     {
