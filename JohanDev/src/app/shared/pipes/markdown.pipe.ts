@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { marked } from 'marked';
 
 @Pipe({
   name: 'markdown',
@@ -10,23 +11,13 @@ export class MarkdownPipe implements PipeTransform {
 
   transform(value: string): SafeHtml {
     if (!value) return '';
-    
-    // Escape HTML characters to prevent XSS
-    let html = value
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      // Bold: **text**
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      // Italic: *text*
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      // Inline code: `code`
-      .replace(/`(.*?)`/g, '<code>$1</code>')
-      // Links: [text](url)
-      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="markdown-link">$1</a>')
-      // Paragraphs / line breaks
-      .replace(/\n/g, '<br/>');
-
-    return this.sanitizer.bypassSecurityTrustHtml(html);
+    try {
+      // Parse markdown to HTML synchronously using marked library
+      const rawHtml = marked.parse(value) as string;
+      return this.sanitizer.bypassSecurityTrustHtml(rawHtml);
+    } catch (e) {
+      console.error('MarkdownPipe: failed to parse markdown', e);
+      return value;
+    }
   }
 }

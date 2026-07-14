@@ -35,7 +35,7 @@
             <h2 class="service-card-title">{{ service.title }}</h2>
           </div>
 
-          <p class="service-main-desc" [innerHTML]="service.description | markdown"></p>
+          <div class="service-main-desc" [innerHTML]="service.description | markdown"></div>
 
           <div class="service-extended-list" *ngIf="service.extendedInfo && service.extendedInfo.length > 0">
             <div *ngFor="let info of service.extendedInfo" class="extended-item">

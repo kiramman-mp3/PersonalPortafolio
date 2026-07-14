@@ -22,6 +22,7 @@
     "@angular/ssr": "^22.0.6",
     "@fortawesome/fontawesome-free": "^7.3.0",
     "express": "^5.1.0",
+    "marked": "^18.0.6",
     "quill": "^2.0.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
