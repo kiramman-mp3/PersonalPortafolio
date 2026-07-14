@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
@@ -21,6 +21,7 @@ export class ProyectosComponent implements OnInit {
 
   constructor(
     private projectsService: ProjectsService,
+    private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -31,6 +32,7 @@ export class ProyectosComponent implements OnInit {
       this.projectsService.getProjects().subscribe(data => {
         this.projects = data;
         this.filteredProjects = data;
+        this.cdr.detectChanges();
       });
     }
   }
