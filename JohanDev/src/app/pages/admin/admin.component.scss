@@ -1,0 +1,552 @@
+.admin-section {
+  position: relative;
+  width: 100%;
+  background: var(--dark);
+  min-height: calc(100vh - 80px);
+  padding: 120px 8% 80px;
+  color: var(--light);
+  z-index: 1;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(77, 53, 255, 0.12), transparent 70%);
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+.admin-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Login Card */
+.admin-login-card {
+  background: linear-gradient(135deg, rgba(22, 18, 48, 0.8) 0%, rgba(13, 10, 26, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 3rem;
+  max-width: 480px;
+  margin: 4rem auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    text-align: center;
+  }
+
+  .login-sub {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    text-align: center;
+    margin: 0 0 2rem 0;
+  }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.login-error {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.btn-primary-admin {
+  background: var(--primary);
+  color: var(--light);
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(77, 53, 255, 0.3);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--purple-bright);
+    box-shadow: 0 6px 20px rgba(77, 53, 255, 0.45);
+  }
+}
+
+/* Dashboard styles */
+.admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1.5rem;
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.8px;
+  }
+}
+
+.btn-logout {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #f87171;
+  }
+}
+
+/* Tabs */
+.tabs-nav {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  button {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 12px 20px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &:hover {
+      color: var(--light);
+    }
+
+    &.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+  }
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+  }
+}
+
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--primary);
+  color: var(--light);
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--purple-bright);
+  }
+}
+
+/* Tables */
+.admin-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+
+  th, td {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  th {
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  .font-bold {
+    font-weight: 600;
+  }
+
+  .desc-cell {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .actions-cell {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-edit, .btn-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(77, 53, 255, 0.15);
+      border-color: rgba(77, 53, 255, 0.3);
+      color: var(--primary);
+    }
+  }
+
+  .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #f87171;
+  }
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 40px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+
+  &.completado {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+  }
+  &.en-progreso {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+  }
+  &.planificado {
+    background: rgba(59, 130, 246, 0.12);
+    color: #60a5fa;
+  }
+}
+
+/* Modal overlays */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, rgba(22, 18, 48, 0.98) 0%, rgba(13, 10, 26, 1) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  max-width: 550px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+  }
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.75rem;
+  cursor: pointer;
+  line-height: 1;
+
+  &:hover {
+    color: var(--light);
+  }
+}
+
+/* Form controls */
+.admin-form {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  input[type="text"],
+  input[type="password"],
+  select,
+  textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--light);
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+
+    &:focus {
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.07);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  select {
+    color-scheme: dark;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-cancel {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.btn-save {
+  background: var(--primary);
+  color: var(--light);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(77, 53, 255, 0.2);
+
+  &:hover {
+    background: var(--purple-bright);
+  }
+}
+
+/* Light Theme */
+body.light-theme {
+  .admin-section {
+    background: var(--bg-color);
+    color: var(--text-color);
+  }
+
+  .admin-login-card {
+    background: var(--card-bg);
+    border-color: var(--card-border);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+
+    .login-sub {
+      color: var(--text-muted);
+    }
+  }
+
+  .form-group {
+    label {
+      color: var(--text-color);
+    }
+    input[type="text"],
+    input[type="password"],
+    select,
+    textarea {
+      background: #ffffff;
+      border-color: rgba(15, 23, 42, 0.15);
+      color: #000000;
+
+      &:focus {
+        border-color: var(--primary);
+      }
+    }
+  }
+
+  .admin-dashboard h1 {
+    color: var(--text-color);
+  }
+
+  .btn-logout {
+    background: #ffffff;
+    border-color: rgba(15, 23, 42, 0.15);
+    color: var(--text-color);
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.05);
+      border-color: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+  }
+
+  .tabs-nav {
+    border-bottom-color: rgba(15, 23, 42, 0.1);
+
+    button {
+      color: var(--text-muted);
+      &:hover {
+        color: var(--text-color);
+      }
+      &.active {
+        color: var(--primary);
+      }
+    }
+  }
+
+  .admin-table-wrap {
+    background: #ffffff;
+    border-color: rgba(15, 23, 42, 0.1);
+  }
+
+  .admin-table {
+    th {
+      background: rgba(15, 23, 42, 0.02);
+      color: rgba(15, 23, 42, 0.5);
+    }
+    td {
+      border-bottom-color: rgba(15, 23, 42, 0.08);
+      color: var(--text-color);
+    }
+    .desc-cell {
+      color: var(--text-muted);
+    }
+    .btn-edit, .btn-delete {
+      background: #ffffff;
+      border-color: rgba(15, 23, 42, 0.15);
+      color: var(--text-color);
+
+      &:hover {
+        background: rgba(77, 53, 255, 0.08);
+        border-color: rgba(77, 53, 255, 0.3);
+      }
+    }
+    .btn-delete:hover {
+      background: rgba(239, 68, 68, 0.08);
+      color: #ef4444;
+    }
+  }
+
+  .modal-content {
+    background: #ffffff;
+    border-color: rgba(15, 23, 42, 0.12);
+    color: #000000;
+  }
+
+  .modal-header {
+    border-bottom-color: rgba(15, 23, 42, 0.08);
+  }
+
+  .btn-cancel {
+    background: #ffffff;
+    border-color: rgba(15, 23, 42, 0.15);
+    color: var(--text-color);
+
+    &:hover {
+      background: rgba(15, 23, 42, 0.04);
+    }
+  }
+}

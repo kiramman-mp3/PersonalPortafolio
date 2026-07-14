@@ -1,0 +1,204 @@
+<section class="admin-section">
+  <div class="admin-container">
+    
+    <!-- Login View -->
+    <div *ngIf="!isLoggedIn" class="admin-login-card">
+      <h2>Panel de Administración</h2>
+      <p class="login-sub">Introduce la contraseña de administrador para continuar.</p>
+      
+      <form (submit)="onLogin(); $event.preventDefault()" class="login-form">
+        <div class="form-group">
+          <label for="pass">Contraseña</label>
+          <input type="password" id="pass" [(ngModel)]="password" name="password" placeholder="••••••••" required />
+        </div>
+        <div *ngIf="loginError" class="login-error">{{ loginError }}</div>
+        <button type="submit" class="btn-primary-admin">Acceder</button>
+      </form>
+    </div>
+
+    <!-- Dashboard View -->
+    <div *ngIf="isLoggedIn" class="admin-dashboard">
+      <div class="dashboard-header">
+        <h1>Administración</h1>
+        <button (click)="onLogout()" class="btn-logout">
+          Cerrar Sesión <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+
+      <!-- Tab Selectors -->
+      <div class="tabs-nav">
+        <button (click)="activeTab = 'services'" [class.active]="activeTab === 'services'">
+          <i class="fas fa-concierge-bell"></i> Servicios
+        </button>
+        <button (click)="activeTab = 'projects'" [class.active]="activeTab === 'projects'">
+          <i class="fas fa-folder-open"></i> Proyectos
+        </button>
+      </div>
+
+      <!-- Services List Tab -->
+      <div *ngIf="activeTab === 'services'" class="tab-content">
+        <div class="tab-header">
+          <h2>Lista de Servicios</h2>
+          <button (click)="openAddService()" class="btn-add">
+            <i class="fas fa-plus"></i> Nuevo Servicio
+          </button>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of services">
+                <td class="font-bold">{{ s.title }}</td>
+                <td class="desc-cell">{{ s.description }}</td>
+                <td class="actions-cell">
+                  <button (click)="openEditService(s)" class="btn-edit" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button (click)="deleteService(s.id)" class="btn-delete" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Projects List Tab -->
+      <div *ngIf="activeTab === 'projects'" class="tab-content">
+        <div class="tab-header">
+          <h2>Lista de Proyectos</h2>
+          <button (click)="openAddProject()" class="btn-add">
+            <i class="fas fa-plus"></i> Nuevo Proyecto
+          </button>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Estado</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of projects">
+                <td class="font-bold">{{ p.title }}</td>
+                <td>
+                  <span class="status-badge" [ngClass]="p.status">
+                    {{ p.status }}
+                  </span>
+                </td>
+                <td class="desc-cell">{{ p.description }}</td>
+                <td class="actions-cell">
+                  <button (click)="openEditProject(p)" class="btn-edit" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button (click)="deleteProject(p.id)" class="btn-delete" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Service Modal -->
+  <div *ngIf="showServiceModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{ isEditingService ? 'Editar Servicio' : 'Nuevo Servicio' }}</h3>
+        <button (click)="showServiceModal = false" class="close-modal">&times;</button>
+      </div>
+      <form (submit)="saveService(); $event.preventDefault()" class="admin-form">
+        <div class="form-group">
+          <label>Título *</label>
+          <input type="text" [(ngModel)]="serviceForm.title" name="title" required />
+        </div>
+        <div class="form-group">
+          <label>Descripción Corta *</label>
+          <textarea [(ngModel)]="serviceForm.description" name="description" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>URL de Imagen *</label>
+          <input type="text" [(ngModel)]="serviceForm.imageUrl" name="imageUrl" required />
+        </div>
+        <div class="form-group">
+          <label>Texto Alt de Imagen</label>
+          <input type="text" [(ngModel)]="serviceForm.imageAlt" name="imageAlt" />
+        </div>
+        <div class="form-group">
+          <label>Información Extendida (Una línea por cada beneficio/punto)</label>
+          <textarea [(ngModel)]="serviceForm.extendedInfoStr" name="extendedInfo" placeholder="Punto 1&#10;Punto 2"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Tecnologías (Separadas por comas)</label>
+          <input type="text" [(ngModel)]="serviceForm.technologiesStr" name="technologies" placeholder="Figma, React, Angular" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" (click)="showServiceModal = false" class="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn-save">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Project Modal -->
+  <div *ngIf="showProjectModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{ isEditingProject ? 'Editar Proyecto' : 'Nuevo Proyecto' }}</h3>
+        <button (click)="showProjectModal = false" class="close-modal">&times;</button>
+      </div>
+      <form (submit)="saveProject(); $event.preventDefault()" class="admin-form">
+        <div class="form-group">
+          <label>Título *</label>
+          <input type="text" [(ngModel)]="projectForm.title" name="title" required />
+        </div>
+        <div class="form-group">
+          <label>Descripción *</label>
+          <textarea [(ngModel)]="projectForm.description" name="description" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>URL de Imagen *</label>
+          <input type="text" [(ngModel)]="projectForm.image" name="image" required />
+        </div>
+        <div class="form-group">
+          <label>Estado *</label>
+          <select [(ngModel)]="projectForm.status" name="status" required>
+            <option value="completado">Completado</option>
+            <option value="en-progreso">En Progreso</option>
+            <option value="planificado">Planificado</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>URL de GitHub *</label>
+          <input type="text" [(ngModel)]="projectForm.githubUrl" name="githubUrl" required />
+        </div>
+        <div class="form-group">
+          <label>Tecnologías (Separadas por comas)</label>
+          <input type="text" [(ngModel)]="projectForm.technologiesStr" name="technologies" placeholder="Laravel, MySQL, JavaScript" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" (click)="showProjectModal = false" class="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn-save">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</section>

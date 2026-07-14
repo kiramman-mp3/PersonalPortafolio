@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 export interface Project {
-  id: number;
+  id: any;
   title: string;
   description: string;
   technologies: string[];
@@ -58,5 +58,23 @@ export class ProjectsService {
         return of(this.fallbackProjects);
       })
     );
+  }
+
+  createProject(project: any, token: string): Observable<any> {
+    return this.http.post(this.apiUrl, project, {
+      headers: { 'x-api-key': token }
+    });
+  }
+
+  updateProject(id: string, project: any, token: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, project, {
+      headers: { 'x-api-key': token }
+    });
+  }
+
+  deleteProject(id: string, token: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`, {
+      headers: { 'x-api-key': token }
+    });
   }
 }

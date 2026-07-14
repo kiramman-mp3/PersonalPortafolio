@@ -80,4 +80,22 @@ export class ServicesService {
       })
     );
   }
+
+  createService(service: any, token: string): Observable<any> {
+    return this.http.post(this.apiUrl, service, {
+      headers: { 'x-api-key': token }
+    });
+  }
+
+  updateService(id: string, service: any, token: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, service, {
+      headers: { 'x-api-key': token }
+    });
+  }
+
+  deleteService(id: string, token: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`, {
+      headers: { 'x-api-key': token }
+    });
+  }
 }
