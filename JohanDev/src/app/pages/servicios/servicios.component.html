@@ -1,0 +1,58 @@
+<section class="services-page-section">
+  <div class="services-page-container">
+    <div class="services-page-header">
+      <h1 class="page-title">
+        <span class="title-main">Nuestros Servicios</span>
+        <span class="title-highlight">Soluciones a tu Medida</span>
+      </h1>
+      <p class="page-subtitle">
+        Transformamos tus ideas en productos digitales de alto rendimiento utilizando las últimas tecnologías y mejores prácticas del mercado.
+      </p>
+    </div>
+
+    <div class="services-list">
+      <div *ngFor="let service of services; let i = index" class="service-detail-card" [class.reverse]="i % 2 !== 0">
+        <!-- Service Image -->
+        <div class="service-image-block">
+          <div class="image-wrapper">
+            <img [src]="service.imageUrl" [alt]="service.imageAlt" />
+            <div class="image-glow"></div>
+          </div>
+        </div>
+
+        <!-- Service Info -->
+        <div class="service-info-block">
+          <div class="service-header-row">
+            <div class="service-icon-box">
+              <i class="fas" [ngClass]="getServiceIcon(service.id)"></i>
+            </div>
+            <h2 class="service-card-title">{{ service.title }}</h2>
+          </div>
+
+          <p class="service-main-desc">{{ service.description }}</p>
+
+          <div class="service-extended-list" *ngIf="service.extendedInfo && service.extendedInfo.length > 0">
+            <div *ngFor="let info of service.extendedInfo" class="extended-item">
+              <i class="fas fa-circle-check"></i>
+              <span>{{ info }}</span>
+            </div>
+          </div>
+
+          <div class="tech-tags-wrapper" *ngIf="service.technologies && service.technologies.length > 0">
+            <h3 class="tech-title">Tecnologías Clave:</h3>
+            <div class="tech-tags">
+              <span *ngFor="let tech of service.technologies" class="tech-tag">{{ tech }}</span>
+            </div>
+          </div>
+          
+          <div class="service-actions">
+            <a routerLink="/contacto" class="btn-quote">
+              Cotizar Proyecto <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<app-footer></app-footer>
