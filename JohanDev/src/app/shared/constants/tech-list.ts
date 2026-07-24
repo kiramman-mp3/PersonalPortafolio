@@ -40,6 +40,7 @@ export const TECH_MASTER_LIST: TechItem[] = [
 
   // Backend
   { name: 'Node.js', icon: 'fab fa-node-js', color: '#339933' },
+  { name: 'Express', icon: 'fas fa-server', color: '#ffffff' },
   { name: 'Express.js', icon: 'fas fa-server', color: '#ffffff' },
   { name: 'NestJS', icon: 'fas fa-project-diagram', color: '#e0234e' },
   { name: 'Laravel', icon: 'fab fa-laravel', color: '#ff2d20' },
@@ -79,7 +80,7 @@ export const TECH_MASTER_LIST: TechItem[] = [
   { name: 'AWS', icon: 'fab fa-aws', color: '#ff9900' },
   { name: 'Azure', icon: 'fab fa-microsoft', color: '#0078d4' },
   { name: 'Google Cloud', icon: 'fab fa-google', color: '#4285f4' },
-  { name: 'Vercel', icon: 'fas fa-triangle', color: '#ffffff' },
+  { name: 'Vercel', icon: 'fas fa-caret-up', color: '#ffffff' },
   { name: 'Netlify', icon: 'fas fa-globe', color: '#00c7b7' },
   { name: 'Railway', icon: 'fas fa-train', color: '#7b3ff2' },
   { name: 'GitHub Actions', icon: 'fab fa-github', color: '#2088ff' },
