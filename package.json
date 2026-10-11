@@ -10,7 +10,15 @@
     "build": "npm run build --workspace=apps/api && npm run build --workspace=apps/frontend",
     "build:api": "npm run build --workspace=apps/api",
     "build:frontend": "npm run build --workspace=apps/frontend",
+    "start:api": "npm run start --workspace=apps/api",
+    "start:frontend": "npm run serve:ssr:JohanDev --workspace=apps/frontend",
     "dev:api": "npm run dev --workspace=apps/api",
-    "dev:frontend": "npm run start --workspace=apps/frontend"
+    "dev:frontend": "npm run start --workspace=apps/frontend",
+    "prisma:generate": "npm run postinstall --workspace=apps/api",
+    "prisma:migrate": "npx prisma migrate deploy --schema=apps/api/prisma/schema.prisma",
+    "prisma:studio": "npx prisma studio --schema=apps/api/prisma/schema.prisma"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

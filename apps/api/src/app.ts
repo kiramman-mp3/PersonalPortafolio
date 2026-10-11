@@ -7,7 +7,7 @@ import adminRoutes from "./view/admin.routes.ts";
 
 const app = express();
 
-// Configuración de CORS permisiva para desarrollo y producción en Vercel
+// Configuración de CORS para desarrollo y producción en Vercel
 app.use(cors({
   origin: true,
   credentials: true,
@@ -18,12 +18,12 @@ app.use(cors({
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-// Health check ligero (para keep-alive, Vercel, Render)
+// Health check para Vercel y monitoreo
 app.get(["/health", "/api/health"], (_req: Request, res: Response) => {
   res.status(200).json({ ok: true, message: "ok", timestamp: new Date().toISOString() });
 });
 
-// Rutas bajo prefijo /api (estándar para Serverless en Vercel y monorepo)
+// Rutas bajo prefijo /api (estándar para REST API en producción y monorepo)
 app.use("/api/services", serviceRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/contact", contactRoutes);

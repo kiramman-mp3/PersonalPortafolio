@@ -1,18 +1,22 @@
 /**
  * URL base del backend para llamadas a la API.
  * 
- * Modos soportados:
- * 1. Despliegue unificado en Vercel (Monorepo): detecta vercel.app o mismo origen y usa `${window.location.origin}/api`.
- * 2. Despliegue separado en Vercel/Railway: usa DEFAULT_REMOTE_API o variable configurable.
- * 3. Desarrollo local: soporta backend local (http://localhost:4000) o fallback remoto.
+ * Modos de resolución:
+ * 1. Configuración dinámica en runtime: window.__API_URL__ o localStorage.getItem('api_url')
+ * 2. Desarrollo local (localhost / 127.0.0.1 / IPs privadas):
+ *    - Apunta por defecto a http://localhost:4000 (backend Express local)
+ *    - Si deseas probar el backend remoto en local: localStorage.setItem('use_remote_api', 'true')
+ * 3. Despliegue unificado en Vercel (Frontend + Backend en un solo dominio):
+ *    - Detecta automáticamente *.vercel.app o dominio personalizado en producción
+ *      y consume `${window.location.origin}/api` (mismo origen, sin CORS ni latencia externa).
+ * 4. Fallback: DEFAULT_REMOTE_API
  */
 
-// Si tu backend está alojado de forma separada en Vercel, coloca aquí su URL (ej: 'https://mi-backend.vercel.app')
 export const DEFAULT_REMOTE_API = 'https://personalportafolio-production.up.railway.app';
 
 export function getBaseApiUrl(): string {
   if (typeof window !== 'undefined') {
-    // 1. Configuración dinámica en runtime (si se define en window o localStorage)
+    // 1. Configuración dinámica en runtime (inyectada en window o guardada en localStorage)
     const customApi = (window as any).__API_URL__ || localStorage.getItem('api_url');
     if (customApi) {
       return customApi.replace(/\/$/, '');
@@ -20,19 +24,16 @@ export function getBaseApiUrl(): string {
 
     const hostname = window.location.hostname;
 
-    // 2. Si está alojado en Vercel (monorepo unificado con backend en /api)
-    if (hostname.endsWith('.vercel.app')) {
-      return `${window.location.origin}/api`;
+    // 2. Desarrollo local (localhost / 127.0.0.1 / IPs privadas de red local)
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.')) {
+      if (localStorage.getItem('use_remote_api') === 'true') {
+        return DEFAULT_REMOTE_API;
+      }
+      return 'http://localhost:4000';
     }
 
-    // 3. Desarrollo local (localhost / 127.0.0.1)
-    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.')) {
-      // Si prefieres usar el backend local en puerto 4000, descomenta la siguiente línea o guarda 'local' en localStorage:
-      if (localStorage.getItem('use_local_backend') === 'true') {
-        return 'http://localhost:4000';
-      }
-      return DEFAULT_REMOTE_API;
-    }
+    // 3. Despliegue unificado en Vercel (mismo dominio *.vercel.app o dominio personalizado)
+    return `${window.location.origin}/api`;
   }
 
   // Fallback para SSR o producción externa

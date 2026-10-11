@@ -1,13 +1,26 @@
 import app from "./app.ts";
 import { env } from "./config/env.ts";
 
-const PORT = env["PORT"] || 4000;
+const PORT = Number(process.env.PORT) || env.PORT || 4000;
+const HOST = "0.0.0.0";
 
-// En entornos serverless como Vercel (process.env.VERCEL definido), no iniciamos el listener HTTP
+// En entornos Serverless como Vercel (process.env.VERCEL definido), no se inicia el listener HTTP
 if (!process.env.VERCEL) {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  const server = app.listen(PORT, HOST, () => {
+    console.log(`🚀 JohanDev API running on http://${HOST}:${PORT}`);
+    console.log(`🩺 Health check available at http://${HOST}:${PORT}/health`);
   });
+
+  const handleShutdown = (signal: string) => {
+    console.log(`\nRecibida señal ${signal}. Cerrando servidor de forma segura...`);
+    server.close(() => {
+      console.log("Servidor cerrado correctamente.");
+      process.exit(0);
+    });
+  };
+
+  process.on("SIGTERM", () => handleShutdown("SIGTERM"));
+  process.on("SIGINT", () => handleShutdown("SIGINT"));
 }
 
 export default app;

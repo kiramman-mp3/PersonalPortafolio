@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "esModuleInterop": true,
+    "noEmit": true
+  },
+  "include": [
+    "api/**/*",
+    "apps/api/src/**/*"
+  ]
+}
