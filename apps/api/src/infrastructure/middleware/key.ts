@@ -11,7 +11,7 @@ export const apiMiddleware = (req: Request, res: Response, next: NextFunction) =
     const serverKey = env["API_KEY"];
     if (!serverKey || typeof serverKey !== "string" || !serverKey.trim()) {
         return res.status(503).json({
-            message: "API Key no configurada en el servidor. Configura la variable API_KEY en Render.",
+            message: "API Key no configurada en el servidor. Configura la variable API_KEY en las variables de entorno de Vercel.",
         });
     }
     const clientKey = normalizeKey(req.headers["x-api-key"]);

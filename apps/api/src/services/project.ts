@@ -8,10 +8,10 @@ interface ProjectCreateData {
     technologies: string[];
     status: 'completado' | 'en-progreso' | 'planificado';
     image: string;
-    githubUrl?: string;
-    webUrl?: string;
-    backendUrl?: string;
-    apkUrl?: string;
+    githubUrl?: string | null;
+    webUrl?: string | null;
+    backendUrl?: string | null;
+    apkUrl?: string | null;
 }
 
 interface ProjectEditData {
@@ -21,10 +21,10 @@ interface ProjectEditData {
     technologies?: string[];
     status?: 'completado' | 'en-progreso' | 'planificado';
     image?: string;
-    githubUrl?: string;
-    webUrl?: string;
-    backendUrl?: string;
-    apkUrl?: string;
+    githubUrl?: string | null;
+    webUrl?: string | null;
+    backendUrl?: string | null;
+    apkUrl?: string | null;
 }
 
 export class ProjectsService {

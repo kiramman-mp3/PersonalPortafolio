@@ -18,13 +18,13 @@ export class ProjectModel {
         technologies: string[];
         status: string;
         image: string;
-        githubUrl?: string;
-        webUrl?: string;
-        backendUrl?: string;
-        apkUrl?: string;
+        githubUrl?: string | null;
+        webUrl?: string | null;
+        backendUrl?: string | null;
+        apkUrl?: string | null;
     }) {
         return prisma.projects.create({
-            data
+            data: data as any
         });
     }
     static async update(id: number, data: {
@@ -34,10 +34,10 @@ export class ProjectModel {
         technologies?: string[];
         status?: string;
         image?: string;
-        githubUrl?: string;
-        webUrl?: string;
-        backendUrl?: string;
-        apkUrl?: string;
+        githubUrl?: string | null;
+        webUrl?: string | null;
+        backendUrl?: string | null;
+        apkUrl?: string | null;
     }) {
         try {
             return prisma.projects.update({
