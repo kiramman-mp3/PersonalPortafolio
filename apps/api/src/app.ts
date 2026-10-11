@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { type Request, type Response } from "express";
 import cors from "cors";
 import serviceRoutes from "./view/service.routes.ts";
 import projectRoutes from "./view/project.routes.ts";
