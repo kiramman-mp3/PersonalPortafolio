@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -17,18 +17,19 @@ import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
   styleUrl: './admin.component.scss'
 })
 export class AdminComponent implements OnInit {
-  isLoggedIn = false;
+  // Signals: OnPush is the default, so state set from async callbacks must notify the view
+  isLoggedIn = signal(false);
   password = '';
-  loginError = '';
+  loginError = signal('');
 
   activeTab: 'services' | 'projects' | 'certificates' = 'services';
   editorMode: 'write' | 'preview' = 'write';
   
-  services: ServiceItem[] = [];
-  projects: Project[] = [];
-  certificates: Certificate[] = [];
+  services = signal<ServiceItem[]>([]);
+  projects = signal<Project[]>([]);
+  certificates = signal<Certificate[]>([]);
   
-  token = '';
+  token = signal('');
 
   // Tech list from constants
   techMasterList = TECH_MASTER_LIST;
@@ -36,9 +37,9 @@ export class AdminComponent implements OnInit {
   customTechName = '';
 
   // Form states
-  showServiceModal = false;
-  showProjectModal = false;
-  showCertificateModal = false;
+  showServiceModal = signal(false);
+  showProjectModal = signal(false);
+  showCertificateModal = signal(false);
   isEditingService = false;
   isEditingProject = false;
   isEditingCertificate = false;
@@ -83,20 +84,21 @@ export class AdminComponent implements OnInit {
     private servicesService: ServicesService,
     private projectsService: ProjectsService,
     private certificatesService: CertificatesService,
-    private http: HttpClient
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
       const savedToken = localStorage.getItem('admin_token');
       if (savedToken) {
-        this.token = savedToken;
+        this.token.set(savedToken);
         // Verify saved session token with backend
         this.http.get<any>(`${getBaseApiUrl()}/admin/verify`, {
           headers: { 'x-api-key': savedToken }
         }).subscribe({
           next: () => {
-            this.isLoggedIn = true;
+            this.isLoggedIn.set(true);
             this.loadData();
           },
           error: (err) => {
@@ -104,7 +106,7 @@ export class AdminComponent implements OnInit {
               console.warn('Sesión de administrador inválida o expirada.');
               this.onLogout();
             } else {
-              this.isLoggedIn = true;
+              this.isLoggedIn.set(true);
               this.loadData();
             }
           }
@@ -114,22 +116,24 @@ export class AdminComponent implements OnInit {
   }
 
   onLogin(): void {
-    this.loginError = '';
+    this.loginError.set('');
     this.http.post<any>(`${getBaseApiUrl()}/admin/login`, { password: this.password })
       .subscribe({
         next: (res) => {
           if (res && res.success && res.token) {
-            this.token = res.token;
+            this.token.set(res.token);
             if (typeof window !== 'undefined') {
               localStorage.setItem('admin_token', res.token);
             }
-            this.isLoggedIn = true;
+            this.isLoggedIn.set(true);
             this.loadData();
           }
         },
         error: (err) => {
           console.error(err);
-          this.loginError = 'Contraseña incorrecta';
+          this.loginError.set(err?.status === 0
+            ? 'No se pudo conectar con el servidor.'
+            : err?.error?.message || 'Contraseña incorrecta');
         }
       });
   }
@@ -138,17 +142,17 @@ export class AdminComponent implements OnInit {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('admin_token');
     }
-    this.token = '';
-    this.isLoggedIn = false;
-    this.services = [];
-    this.projects = [];
-    this.certificates = [];
+    this.token.set('');
+    this.isLoggedIn.set(false);
+    this.services.set([]);
+    this.projects.set([]);
+    this.certificates.set([]);
   }
 
   loadData(): void {
-    this.servicesService.getServices().subscribe(data => this.services = data);
-    this.projectsService.getProjects().subscribe(data => this.projects = data);
-    this.certificatesService.getCertificates().subscribe(data => this.certificates = data);
+    this.servicesService.getServices().subscribe(data => this.services.set(data));
+    this.projectsService.getProjects().subscribe(data => this.projects.set(data));
+    this.certificatesService.getCertificates().subscribe(data => this.certificates.set(data));
   }
 
   // IMAGE UPLOAD WITH COMPRESSION
@@ -195,6 +199,7 @@ export class AdminComponent implements OnInit {
           } else {
             this.certificateForm.image = compressedBase64;
           }
+          this.cdr.markForCheck();
         }
       };
       img.src = e.target.result;
@@ -236,7 +241,7 @@ export class AdminComponent implements OnInit {
       imageAlt: '',
       extendedInfoStr: ''
     };
-    this.showServiceModal = true;
+    this.showServiceModal.set(true);
   }
 
   openEditService(service: ServiceItem): void {
@@ -250,7 +255,7 @@ export class AdminComponent implements OnInit {
       imageAlt: service.imageAlt,
       extendedInfoStr: (service.extendedInfo || []).join('\n')
     };
-    this.showServiceModal = true;
+    this.showServiceModal.set(true);
   }
 
   saveService(): void {
@@ -264,17 +269,17 @@ export class AdminComponent implements OnInit {
     };
 
     if (this.isEditingService) {
-      this.servicesService.updateService(this.serviceForm.id, serviceData, this.token).subscribe({
+      this.servicesService.updateService(this.serviceForm.id, serviceData, this.token()).subscribe({
         next: () => {
-          this.showServiceModal = false;
+          this.showServiceModal.set(false);
           this.loadData();
         },
         error: (err) => this.handleActionError(err, 'actualizar servicio')
       });
     } else {
-      this.servicesService.createService(serviceData, this.token).subscribe({
+      this.servicesService.createService(serviceData, this.token()).subscribe({
         next: () => {
-          this.showServiceModal = false;
+          this.showServiceModal.set(false);
           this.loadData();
         },
         error: (err) => this.handleActionError(err, 'crear servicio')
@@ -284,7 +289,7 @@ export class AdminComponent implements OnInit {
 
   deleteService(id: string): void {
     if (confirm('¿Estás seguro de que deseas eliminar este servicio?')) {
-      this.servicesService.deleteService(id, this.token).subscribe({
+      this.servicesService.deleteService(id, this.token()).subscribe({
         next: () => this.loadData(),
         error: (err) => this.handleActionError(err, 'eliminar servicio')
       });
@@ -307,7 +312,7 @@ export class AdminComponent implements OnInit {
       backendUrl: '',
       apkUrl: ''
     };
-    this.showProjectModal = true;
+    this.showProjectModal.set(true);
   }
 
   openEditProject(project: Project): void {
@@ -325,7 +330,7 @@ export class AdminComponent implements OnInit {
       backendUrl: project.backendUrl || '',
       apkUrl: project.apkUrl || ''
     };
-    this.showProjectModal = true;
+    this.showProjectModal.set(true);
   }
 
   saveProject(): void {
@@ -343,17 +348,17 @@ export class AdminComponent implements OnInit {
     };
 
     if (this.isEditingProject) {
-      this.projectsService.updateProject(this.projectForm.id, projectData, this.token).subscribe({
+      this.projectsService.updateProject(this.projectForm.id, projectData, this.token()).subscribe({
         next: () => {
-          this.showProjectModal = false;
+          this.showProjectModal.set(false);
           this.loadData();
         },
         error: (err) => this.handleActionError(err, 'actualizar proyecto')
       });
     } else {
-      this.projectsService.createProject(projectData, this.token).subscribe({
+      this.projectsService.createProject(projectData, this.token()).subscribe({
         next: () => {
-          this.showProjectModal = false;
+          this.showProjectModal.set(false);
           this.loadData();
         },
         error: (err) => this.handleActionError(err, 'crear proyecto')
@@ -363,7 +368,7 @@ export class AdminComponent implements OnInit {
 
   deleteProject(id: string): void {
     if (confirm('¿Estás seguro de que deseas eliminar este proyecto?')) {
-      this.projectsService.deleteProject(id, this.token).subscribe({
+      this.projectsService.deleteProject(id, this.token()).subscribe({
         next: () => this.loadData(),
         error: (err) => this.handleActionError(err, 'eliminar proyecto')
       });
@@ -387,7 +392,7 @@ export class AdminComponent implements OnInit {
       hours: 0,
       image: ''
     };
-    this.showCertificateModal = true;
+    this.showCertificateModal.set(true);
   }
 
   openEditCertificate(cert: Certificate): void {
@@ -406,7 +411,7 @@ export class AdminComponent implements OnInit {
       hours: cert.hours || 0,
       image: cert.image || ''
     };
-    this.showCertificateModal = true;
+    this.showCertificateModal.set(true);
   }
 
   saveCertificate(): void {
@@ -425,17 +430,17 @@ export class AdminComponent implements OnInit {
     };
 
     if (this.isEditingCertificate) {
-      this.certificatesService.updateCertificate(this.certificateForm.id, certData, this.token).subscribe({
+      this.certificatesService.updateCertificate(this.certificateForm.id, certData, this.token()).subscribe({
         next: () => {
-          this.showCertificateModal = false;
+          this.showCertificateModal.set(false);
           this.loadData();
         },
         error: (err) => this.handleActionError(err, 'actualizar certificado')
       });
     } else {
-      this.certificatesService.createCertificate(certData, this.token).subscribe({
+      this.certificatesService.createCertificate(certData, this.token()).subscribe({
         next: () => {
-          this.showCertificateModal = false;
+          this.showCertificateModal.set(false);
           this.loadData();
         },
         error: (err) => this.handleActionError(err, 'crear certificado')
@@ -445,7 +450,7 @@ export class AdminComponent implements OnInit {
 
   deleteCertificate(id: string): void {
     if (confirm('¿Estás seguro de que deseas eliminar este certificado?')) {
-      this.certificatesService.deleteCertificate(id, this.token).subscribe({
+      this.certificatesService.deleteCertificate(id, this.token()).subscribe({
         next: () => this.loadData(),
         error: (err) => this.handleActionError(err, 'eliminar certificado')
       });
