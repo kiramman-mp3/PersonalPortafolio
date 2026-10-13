@@ -8,7 +8,10 @@ adminRouter.post("/login", (req: Request, res: Response) => {
     try {
         const body = req.body || {};
         const password = typeof body.password === "string" ? body.password.trim() : "";
-        const adminPassword = (env.ADMIN_PASSWORD || env.API_KEY || "admin123").trim();
+        const cleanPassword = password.replace(/^["']|["']$/g, "").trim();
+        const validPasswords = [
+            env.ADMIN_PASSWORD ? env.ADMIN_PASSWORD.trim() : ""
+        ].filter(p => p.length > 0);
 
         if (!password) {
             return res.status(400).json({
@@ -17,15 +20,17 @@ adminRouter.post("/login", (req: Request, res: Response) => {
             });
         }
 
-        if (password === adminPassword) {
-            return res.status(200).json({ 
-                success: true, 
-                token: env.API_KEY || "some-api-key"
+        const isMatch = validPasswords.includes(password) || validPasswords.includes(cleanPassword);
+
+        if (isMatch) {
+            return res.status(200).json({
+                success: true,
+                token: env.API_KEY || env.ADMIN_PASSWORD || "some-api-key"
             });
         } else {
-            return res.status(401).json({ 
-                success: false, 
-                message: "Contraseña incorrecta." 
+            return res.status(401).json({
+                success: false,
+                message: "Contraseña incorrecta."
             });
         }
     } catch (error) {
