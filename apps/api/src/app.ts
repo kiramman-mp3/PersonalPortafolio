@@ -4,6 +4,7 @@ import serviceRoutes from "./view/service.routes.ts";
 import projectRoutes from "./view/project.routes.ts";
 import contactRoutes from "./view/contact.routes.ts";
 import adminRoutes from "./view/admin.routes.ts";
+import certificateRoutes from "./view/certificate.routes.ts";
 
 const app = express();
 
@@ -26,12 +27,14 @@ app.get(["/health", "/api/health"], (_req: Request, res: Response) => {
 // Rutas bajo prefijo /api (estándar para REST API en producción y monorepo)
 app.use("/api/services", serviceRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/certificates", certificateRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminRoutes);
 
 // Rutas directas (compatibilidad con clientes existentes o despliegues raíz)
 app.use("/services", serviceRoutes);
 app.use("/projects", projectRoutes);
+app.use("/certificates", certificateRoutes);
 app.use("/contact", contactRoutes);
 app.use("/admin", adminRoutes);
 

@@ -1,0 +1,266 @@
+<section class="certificates-page-section">
+  <div class="certificates-page-container">
+    
+    <!-- Page Header -->
+    <div class="certificates-page-header">
+      <h1 class="page-title">
+        <span class="title-main">Certificaciones & Logros</span>
+        <span class="title-highlight">Formación Continua</span>
+      </h1>
+      <p class="page-subtitle">
+        Acreditaciones académicas y profesionales que respaldan mis habilidades en desarrollo de software, arquitectura de sistemas y tecnologías en la nube.
+      </p>
+    </div>
+
+    <!-- Quick Stats Bento Strip -->
+    <div class="stats-strip" *ngIf="stats">
+      <div class="stat-card">
+        <div class="stat-icon-wrap primary">
+          <i class="fas fa-certificate"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{ stats.totalCertificates }}</span>
+          <span class="stat-label">Certificados Obtenidos</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap purple">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">+{{ stats.totalHours }}h</span>
+          <span class="stat-label">Horas de Especialización</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap success">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{ stats.verifiedPercentage }}%</span>
+          <span class="stat-label">Credenciales Verificables</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap info">
+          <i class="fas fa-layer-group"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{ stats.specialtiesCount }}</span>
+          <span class="stat-label">Áreas de Dominio</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Filters -->
+    <div class="filters-container">
+      <button (click)="setFilter('todos')" class="filter-btn" [class.active]="currentFilter === 'todos'">
+        <i class="fas fa-th-large"></i> Todos ({{ certificates.length }})
+      </button>
+      <button (click)="setFilter('web')" class="filter-btn" [class.active]="currentFilter === 'web'">
+        <i class="fas fa-code"></i> Web & Frontend
+      </button>
+      <button (click)="setFilter('backend')" class="filter-btn" [class.active]="currentFilter === 'backend'">
+        <i class="fas fa-server"></i> Backend & Arquitectura
+      </button>
+      <button (click)="setFilter('cloud')" class="filter-btn" [class.active]="currentFilter === 'cloud'">
+        <i class="fas fa-cloud"></i> Cloud & DevOps
+      </button>
+      <button (click)="setFilter('database')" class="filter-btn" [class.active]="currentFilter === 'database'">
+        <i class="fas fa-database"></i> Bases de Datos
+      </button>
+      <button (click)="setFilter('mobile')" class="filter-btn" [class.active]="currentFilter === 'mobile'">
+        <i class="fas fa-mobile-alt"></i> Móvil
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-spinner-container">
+      <div class="premium-spinner"></div>
+      <p class="loading-text">Cargando certificaciones...</p>
+    </div>
+
+    <!-- Certificates Grid -->
+    <div class="certificates-grid" *ngIf="!isLoading">
+      <article *ngFor="let cert of filteredCertificates" class="cert-card" (click)="openCertificateModal(cert)">
+        
+        <!-- Ribbon / Badge Top -->
+        <div class="cert-card-header">
+          <div class="issuer-chip">
+            <i [class]="cert.issuerIcon" aria-hidden="true"></i>
+            <span>{{ cert.issuer }}</span>
+          </div>
+
+          <div class="category-badge">
+            <i [class]="getCategoryIcon(cert.category)"></i>
+            <span>{{ getCategoryLabel(cert.category) }}</span>
+          </div>
+        </div>
+
+        <!-- Certificate Image if present -->
+        <div class="cert-card-image-wrap" *ngIf="cert.image">
+          <img [src]="cert.image" [alt]="cert.title" class="cert-card-img" />
+        </div>
+
+        <!-- Certificate Diploma Visual Feature fallback -->
+        <div class="cert-visual-banner" *ngIf="!cert.image">
+          <div class="cert-seal">
+            <i class="fas fa-award"></i>
+          </div>
+          <div class="cert-banner-text">
+            <span class="cert-official-label">CERTIFICADO DE FINALIZACIÓN</span>
+            <span class="cert-meta-year">{{ cert.date }} • {{ cert.hours }} horas</span>
+          </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="cert-body">
+          <h2 class="cert-title">{{ cert.title }}</h2>
+          <p class="cert-description">{{ cert.description }}</p>
+
+          <!-- Skills Badges -->
+          <div class="cert-skills-wrap">
+            <div class="cert-skills-title">Competencias adquiridas:</div>
+            <div class="cert-skills-list">
+              <span *ngFor="let skill of cert.skills" class="tech-tag-badge">
+                <i [class]="getTechIcon(skill)" [style.color]="getTechColor(skill)"></i>
+                {{ skill }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Credential Footer Info -->
+          <div class="cert-footer-info">
+            <div class="credential-id-box">
+              <span class="credential-label">ID Credencial:</span>
+              <code class="credential-code">{{ cert.credentialId }}</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Actions -->
+        <div class="cert-actions">
+          <button type="button" class="view-cert-btn" (click)="$event.stopPropagation(); openCertificateModal(cert)">
+            <i class="fas fa-expand-alt"></i> Ver Detalle
+          </button>
+          <a *ngIf="cert.credentialUrl" [href]="cert.credentialUrl" target="_blank" rel="noopener noreferrer"
+             class="verify-link-btn" (click)="$event.stopPropagation()">
+            <i class="fas fa-external-link-alt"></i> Validar
+          </a>
+        </div>
+
+      </article>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredCertificates.length === 0" class="empty-certs-state">
+      <div class="empty-icon-box">
+        <i class="fas fa-certificate"></i>
+      </div>
+      <h3>No se encontraron certificados</h3>
+      <p>No hay acreditaciones en esta categoría por el momento.</p>
+      <button class="btn-reset-filter" (click)="setFilter('todos')">
+        Ver todos los certificados
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<!-- Modal de Detalle de Certificado -->
+<div class="cert-modal-backdrop" *ngIf="selectedCertificate" (click)="closeModal()">
+  <div class="cert-modal-dialog" (click)="$event.stopPropagation()">
+    
+    <!-- Modal Close Button -->
+    <button type="button" class="modal-close-btn" (click)="closeModal()" aria-label="Cerrar modal">
+      <i class="fas fa-times"></i>
+    </button>
+
+    <!-- Modal Diploma Header -->
+    <div class="modal-diploma-header">
+      <div class="modal-diploma-seal">
+        <i class="fas fa-award"></i>
+      </div>
+      <div class="modal-diploma-sub">ACREDITACIÓN PROFESIONAL VERIFICADA</div>
+      <h2 class="modal-diploma-title">{{ selectedCertificate.title }}</h2>
+      <div class="modal-diploma-issuer">
+        <i [class]="selectedCertificate.issuerIcon"></i>
+        <span>Emitido por: <strong>{{ selectedCertificate.issuer }}</strong></span>
+      </div>
+    </div>
+
+    <!-- Modal Content Details -->
+    <div class="modal-diploma-body">
+      
+      <!-- Optional Certificate Image Preview -->
+      <div class="modal-cert-image-preview" *ngIf="selectedCertificate.image">
+        <img [src]="selectedCertificate.image" [alt]="selectedCertificate.title" />
+      </div>
+
+      <div class="modal-info-grid">
+        <div class="modal-info-item">
+          <span class="info-label"><i class="fas fa-calendar-alt"></i> Año de Emisión</span>
+          <span class="info-val">{{ selectedCertificate.date }}</span>
+        </div>
+        <div class="modal-info-item">
+          <span class="info-label"><i class="fas fa-clock"></i> Carga Horaria</span>
+          <span class="info-val">{{ selectedCertificate.hours }} Horas Académicas</span>
+        </div>
+        <div class="modal-info-item">
+          <span class="info-label"><i class="fas fa-tag"></i> Categoría</span>
+          <span class="info-val">{{ getCategoryLabel(selectedCertificate.category) }}</span>
+        </div>
+        <div class="modal-info-item">
+          <span class="info-label"><i class="fas fa-check-circle"></i> Estado</span>
+          <span class="info-val text-success">
+            <i class="fas fa-shield-alt"></i> Verificado
+          </span>
+        </div>
+      </div>
+
+      <div class="modal-description-box">
+        <h4>Alcance y Objetivos de la Especialización</h4>
+        <p>{{ selectedCertificate.description }}</p>
+      </div>
+
+      <div class="modal-skills-box">
+        <h4>Tecnologías & Habilidades Clave</h4>
+        <div class="modal-skills-tags">
+          <span *ngFor="let skill of selectedCertificate.skills" class="tech-tag-badge">
+            <i [class]="getTechIcon(skill)" [style.color]="getTechColor(skill)"></i>
+            {{ skill }}
+          </span>
+        </div>
+      </div>
+
+      <div class="modal-credential-box">
+        <div class="credential-info">
+          <span class="credential-title">Identificador Oficial de Credencial</span>
+          <code class="credential-id-text">{{ selectedCertificate.credentialId }}</code>
+        </div>
+        <button type="button" class="btn-copy-id" (click)="copyCredentialId(selectedCertificate.credentialId)">
+          <i class="fas" [ngClass]="copiedId ? 'fa-check' : 'fa-copy'"></i>
+          <span>{{ copiedId ? '¡Copiado!' : 'Copiar ID' }}</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer Actions -->
+    <div class="modal-diploma-footer">
+      <button type="button" class="btn-modal-close" (click)="closeModal()">
+        Cerrar
+      </button>
+      <a *ngIf="selectedCertificate.credentialUrl" [href]="selectedCertificate.credentialUrl"
+         target="_blank" rel="noopener noreferrer" class="btn-modal-verify">
+        <i class="fas fa-external-link-alt"></i> Validar en Plataforma Emisora
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<app-footer></app-footer>

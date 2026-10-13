@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ServicesService, ServiceItem } from '../../shared/services/services.service';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
+import { CertificatesService, Certificate } from '../../shared/services/certificates.service';
 import { TECH_MASTER_LIST } from '../../shared/constants/tech-list';
 import { getBaseApiUrl } from '../../shared/constants/api-url';
 import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
@@ -20,11 +21,12 @@ export class AdminComponent implements OnInit {
   password = '';
   loginError = '';
 
-  activeTab: 'services' | 'projects' = 'services';
+  activeTab: 'services' | 'projects' | 'certificates' = 'services';
   editorMode: 'write' | 'preview' = 'write';
   
   services: ServiceItem[] = [];
   projects: Project[] = [];
+  certificates: Certificate[] = [];
   
   token = '';
 
@@ -36,8 +38,10 @@ export class AdminComponent implements OnInit {
   // Form states
   showServiceModal = false;
   showProjectModal = false;
+  showCertificateModal = false;
   isEditingService = false;
   isEditingProject = false;
+  isEditingCertificate = false;
 
   serviceForm = {
     id: '',
@@ -61,9 +65,24 @@ export class AdminComponent implements OnInit {
     apkUrl: ''
   };
 
+  certificateForm = {
+    id: '',
+    title: '',
+    issuer: '',
+    issuerIcon: 'fas fa-certificate',
+    date: '',
+    category: 'web',
+    credentialId: '',
+    credentialUrl: '',
+    description: '',
+    hours: 0,
+    image: ''
+  };
+
   constructor(
     private servicesService: ServicesService,
     private projectsService: ProjectsService,
+    private certificatesService: CertificatesService,
     private http: HttpClient
   ) {}
 
@@ -72,8 +91,24 @@ export class AdminComponent implements OnInit {
       const savedToken = localStorage.getItem('admin_token');
       if (savedToken) {
         this.token = savedToken;
-        this.isLoggedIn = true;
-        this.loadData();
+        // Verify saved session token with backend
+        this.http.get<any>(`${getBaseApiUrl()}/admin/verify`, {
+          headers: { 'x-api-key': savedToken }
+        }).subscribe({
+          next: () => {
+            this.isLoggedIn = true;
+            this.loadData();
+          },
+          error: (err) => {
+            if (err?.status === 401) {
+              console.warn('Sesión de administrador inválida o expirada.');
+              this.onLogout();
+            } else {
+              this.isLoggedIn = true;
+              this.loadData();
+            }
+          }
+        });
       }
     }
   }
@@ -107,15 +142,17 @@ export class AdminComponent implements OnInit {
     this.isLoggedIn = false;
     this.services = [];
     this.projects = [];
+    this.certificates = [];
   }
 
   loadData(): void {
     this.servicesService.getServices().subscribe(data => this.services = data);
     this.projectsService.getProjects().subscribe(data => this.projects = data);
+    this.certificatesService.getCertificates().subscribe(data => this.certificates = data);
   }
 
   // IMAGE UPLOAD WITH COMPRESSION
-  onImageSelected(event: any, type: 'service' | 'project'): void {
+  onImageSelected(event: any, type: 'service' | 'project' | 'certificate'): void {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -153,8 +190,10 @@ export class AdminComponent implements OnInit {
           const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
           if (type === 'service') {
             this.serviceForm.imageUrl = compressedBase64;
-          } else {
+          } else if (type === 'project') {
             this.projectForm.image = compressedBase64;
+          } else {
+            this.certificateForm.image = compressedBase64;
           }
         }
       };
@@ -230,7 +269,7 @@ export class AdminComponent implements OnInit {
           this.showServiceModal = false;
           this.loadData();
         },
-        error: (err) => alert('Error al actualizar servicio: ' + (err.error?.message || err.message))
+        error: (err) => this.handleActionError(err, 'actualizar servicio')
       });
     } else {
       this.servicesService.createService(serviceData, this.token).subscribe({
@@ -238,7 +277,7 @@ export class AdminComponent implements OnInit {
           this.showServiceModal = false;
           this.loadData();
         },
-        error: (err) => alert('Error al crear servicio: ' + (err.error?.message || err.message))
+        error: (err) => this.handleActionError(err, 'crear servicio')
       });
     }
   }
@@ -247,7 +286,7 @@ export class AdminComponent implements OnInit {
     if (confirm('¿Estás seguro de que deseas eliminar este servicio?')) {
       this.servicesService.deleteService(id, this.token).subscribe({
         next: () => this.loadData(),
-        error: (err) => alert('Error al eliminar servicio')
+        error: (err) => this.handleActionError(err, 'eliminar servicio')
       });
     }
   }
@@ -309,7 +348,7 @@ export class AdminComponent implements OnInit {
           this.showProjectModal = false;
           this.loadData();
         },
-        error: (err) => alert('Error al actualizar proyecto: ' + (err.error?.message || err.message))
+        error: (err) => this.handleActionError(err, 'actualizar proyecto')
       });
     } else {
       this.projectsService.createProject(projectData, this.token).subscribe({
@@ -317,7 +356,7 @@ export class AdminComponent implements OnInit {
           this.showProjectModal = false;
           this.loadData();
         },
-        error: (err) => alert('Error al crear proyecto: ' + (err.error?.message || err.message))
+        error: (err) => this.handleActionError(err, 'crear proyecto')
       });
     }
   }
@@ -326,8 +365,99 @@ export class AdminComponent implements OnInit {
     if (confirm('¿Estás seguro de que deseas eliminar este proyecto?')) {
       this.projectsService.deleteProject(id, this.token).subscribe({
         next: () => this.loadData(),
-        error: (err) => alert('Error al eliminar proyecto')
+        error: (err) => this.handleActionError(err, 'eliminar proyecto')
       });
+    }
+  }
+
+  // CERTIFICATES CRUD
+  openAddCertificate(): void {
+    this.isEditingCertificate = false;
+    this.selectedTechnologies = [];
+    this.certificateForm = {
+      id: '',
+      title: '',
+      issuer: '',
+      issuerIcon: 'fas fa-certificate',
+      date: new Date().getFullYear().toString(),
+      category: 'web',
+      credentialId: '',
+      credentialUrl: '',
+      description: '',
+      hours: 0,
+      image: ''
+    };
+    this.showCertificateModal = true;
+  }
+
+  openEditCertificate(cert: Certificate): void {
+    this.isEditingCertificate = true;
+    this.selectedTechnologies = [...(cert.skills || [])];
+    this.certificateForm = {
+      id: cert.id,
+      title: cert.title,
+      issuer: cert.issuer,
+      issuerIcon: cert.issuerIcon || 'fas fa-certificate',
+      date: cert.date,
+      category: cert.category || 'web',
+      credentialId: cert.credentialId,
+      credentialUrl: cert.credentialUrl || '',
+      description: cert.description,
+      hours: cert.hours || 0,
+      image: cert.image || ''
+    };
+    this.showCertificateModal = true;
+  }
+
+  saveCertificate(): void {
+    const certData = {
+      title: this.certificateForm.title,
+      issuer: this.certificateForm.issuer,
+      issuerIcon: this.certificateForm.issuerIcon || 'fas fa-certificate',
+      date: this.certificateForm.date,
+      category: this.certificateForm.category,
+      credentialId: this.certificateForm.credentialId,
+      credentialUrl: this.certificateForm.credentialUrl || null,
+      description: this.certificateForm.description,
+      skills: this.selectedTechnologies,
+      hours: Number(this.certificateForm.hours) || 0,
+      image: this.certificateForm.image || null
+    };
+
+    if (this.isEditingCertificate) {
+      this.certificatesService.updateCertificate(this.certificateForm.id, certData, this.token).subscribe({
+        next: () => {
+          this.showCertificateModal = false;
+          this.loadData();
+        },
+        error: (err) => this.handleActionError(err, 'actualizar certificado')
+      });
+    } else {
+      this.certificatesService.createCertificate(certData, this.token).subscribe({
+        next: () => {
+          this.showCertificateModal = false;
+          this.loadData();
+        },
+        error: (err) => this.handleActionError(err, 'crear certificado')
+      });
+    }
+  }
+
+  deleteCertificate(id: string): void {
+    if (confirm('¿Estás seguro de que deseas eliminar este certificado?')) {
+      this.certificatesService.deleteCertificate(id, this.token).subscribe({
+        next: () => this.loadData(),
+        error: (err) => this.handleActionError(err, 'eliminar certificado')
+      });
+    }
+  }
+
+  private handleActionError(err: any, actionName: string): void {
+    if (err?.status === 401) {
+      alert('Tu sesión ha expirado o las credenciales no son válidas. Por favor, vuelve a ingresar la contraseña de administrador.');
+      this.onLogout();
+    } else {
+      alert(`Error al ${actionName}: ` + (err?.error?.message || err?.message || 'Error desconocido'));
     }
   }
 }

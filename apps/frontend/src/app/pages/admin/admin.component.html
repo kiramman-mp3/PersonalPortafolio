@@ -33,6 +33,9 @@
         <button (click)="activeTab = 'projects'" [class.active]="activeTab === 'projects'">
           <i class="fas fa-folder-open"></i> Proyectos
         </button>
+        <button (click)="activeTab = 'certificates'" [class.active]="activeTab === 'certificates'">
+          <i class="fas fa-certificate"></i> Certificados
+        </button>
       </div>
 
       <!-- Services List Tab -->
@@ -113,6 +116,57 @@
         </div>
       </div>
 
+      <!-- Certificates List Tab -->
+      <div *ngIf="activeTab === 'certificates'" class="tab-content">
+        <div class="tab-header">
+          <h2>Lista de Certificados</h2>
+          <button (click)="openAddCertificate()" class="btn-add">
+            <i class="fas fa-plus"></i> Nuevo Certificado
+          </button>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Certificado</th>
+                <th>Emisor</th>
+                <th>Fecha / Horas</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of certificates">
+                <td class="font-bold">
+                  <div class="table-item-cell">
+                    <img *ngIf="c.image" [src]="c.image" class="admin-table-thumb" [alt]="c.title" />
+                    <div *ngIf="!c.image" class="admin-table-thumb-icon">
+                      <i [class]="c.issuerIcon || 'fas fa-certificate'"></i>
+                    </div>
+                    <span>{{ c.title }}</span>
+                  </div>
+                </td>
+                <td>{{ c.issuer }}</td>
+                <td>{{ c.date }} <span *ngIf="c.hours" class="hours-badge">{{ c.hours }}h</span></td>
+                <td><span class="badge-cat">{{ c.category }}</span></td>
+                <td class="actions-cell">
+                  <button (click)="openEditCertificate(c)" class="btn-edit" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button (click)="deleteCertificate(c.id)" class="btn-delete" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="certificates.length === 0">
+                <td colspan="5" class="empty-state-cell">No hay certificados registrados aún. ¡Añade el primero!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -182,6 +236,117 @@
         <div class="modal-actions">
           <button type="button" (click)="showServiceModal = false" class="btn-cancel">Cancelar</button>
           <button type="submit" class="btn-save">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Certificate Modal -->
+  <div *ngIf="showCertificateModal" class="modal-overlay">
+    <div class="modal-content modal-content-lg">
+      <div class="modal-header">
+        <h3>{{ isEditingCertificate ? 'Editar Certificado' : 'Nuevo Certificado' }}</h3>
+        <button (click)="showCertificateModal = false" class="close-modal">&times;</button>
+      </div>
+      <form (submit)="saveCertificate(); $event.preventDefault()" class="admin-form">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Título del Certificado *</label>
+            <input type="text" [(ngModel)]="certificateForm.title" name="certTitle" placeholder="Ej. Full Stack Web Developer" required />
+          </div>
+          <div class="form-group">
+            <label>Emisor / Institución *</label>
+            <input type="text" [(ngModel)]="certificateForm.issuer" name="certIssuer" placeholder="Ej. Platzi, Udemy, Cisco..." required />
+          </div>
+        </div>
+
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>Categoría *</label>
+            <select [(ngModel)]="certificateForm.category" name="certCategory" required>
+              <option value="web">Desarrollo Web</option>
+              <option value="backend">Backend & APIs</option>
+              <option value="devops">DevOps & Cloud</option>
+              <option value="mobile">Móvil & Multiplataforma</option>
+              <option value="ai">IA & Data</option>
+              <option value="architecture">Arquitectura & Metodologías</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha / Año *</label>
+            <input type="text" [(ngModel)]="certificateForm.date" name="certDate" placeholder="Ej. 2024 o Marzo 2024" required />
+          </div>
+          <div class="form-group">
+            <label>Horas de Formación</label>
+            <input type="number" [(ngModel)]="certificateForm.hours" name="certHours" placeholder="Ej. 40" />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>ID de Credencial *</label>
+            <input type="text" [(ngModel)]="certificateForm.credentialId" name="certCredId" placeholder="Ej. CERT-98234 o ID de verificación" required />
+          </div>
+          <div class="form-group">
+            <label>Ícono de Emisor (FontAwesome)</label>
+            <input type="text" [(ngModel)]="certificateForm.issuerIcon" name="certIcon" placeholder="fas fa-certificate, fab fa-aws, etc." />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>URL de Credencial / Verificación (Opcional)</label>
+          <input type="text" [(ngModel)]="certificateForm.credentialUrl" name="certUrl" placeholder="https://..." />
+        </div>
+
+        <!-- Image Upload -->
+        <div class="form-group">
+          <label>Imagen del Certificado (Diploma / Captura)</label>
+          <div class="image-upload-wrapper">
+            <input type="file" (change)="onImageSelected($event, 'certificate')" accept="image/*" class="file-input" />
+            <div class="or-separator">O introduce una URL de imagen:</div>
+            <input type="text" [(ngModel)]="certificateForm.image" name="certImageUrl" placeholder="https://..." />
+          </div>
+          <div *ngIf="certificateForm.image" class="image-preview-thumbnail cert-preview-thumb">
+            <img [src]="certificateForm.image" alt="Vista previa del certificado" />
+            <button type="button" (click)="certificateForm.image = ''" class="btn-clear-img" title="Eliminar imagen">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Descripción del Certificado *</label>
+          <textarea [(ngModel)]="certificateForm.description" name="certDescription" placeholder="Detalles de los conocimientos adquiridos, proyectos realizados..." rows="3" required></textarea>
+        </div>
+
+        <!-- Technologies / Skills Selector -->
+        <div class="form-group">
+          <label>Habilidades & Tecnologías Adquiridas</label>
+          <div class="tech-select-container">
+            <div class="tech-select-grid">
+              <button type="button" *ngFor="let tech of techMasterList" 
+                      (click)="toggleTechnology(tech.name)" 
+                      [class.selected]="isTechSelected(tech.name)" 
+                      class="tech-select-btn">
+                <i [class]="tech.icon"></i> {{ tech.name }}
+              </button>
+            </div>
+            <div class="custom-tech-input-row">
+              <input type="text" [(ngModel)]="customTechName" name="customTech" placeholder="Añadir otra tecnología / habilidad" />
+              <button type="button" (click)="addCustomTechnology()" class="btn-add-custom-tech">Añadir</button>
+            </div>
+            <div class="selected-techs-summary" *ngIf="selectedTechnologies.length > 0">
+              <span class="summary-label">Seleccionadas:</span>
+              <span *ngFor="let s of selectedTechnologies" class="selected-tech-badge">
+                {{ s }} <i class="fas fa-times remove-tech-icon" (click)="toggleTechnology(s)"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" (click)="showCertificateModal = false" class="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn-save">Guardar Certificado</button>
         </div>
       </form>
     </div>

@@ -90,6 +90,15 @@ export class HeaderComponent implements OnDestroy {
         this.isMenuOpen.set(false);
     }
 
+    navigateToCertificates(): void {
+        if (this.router.url === '/certificados') {
+            window.scrollTo({ top: 0, behavior: scrollBehavior() });
+        } else {
+            this.router.navigate(['/certificados']);
+        }
+        this.isMenuOpen.set(false);
+    }
+
     navigateToContact(): void {
         if (this.router.url === '/contacto') {
             window.scrollTo({ top: 0, behavior: scrollBehavior() });
