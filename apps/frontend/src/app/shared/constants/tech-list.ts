@@ -17,7 +17,7 @@ export const TECH_MASTER_LIST: TechItem[] = [
   { name: 'React', icon: 'fab fa-react', color: '#61dafb' },
   { name: 'Vue.js', icon: 'fab fa-vuejs', color: '#42b883' },
   { name: 'Nuxt.js', icon: 'fas fa-layer-group', color: '#00dc82' },
-  { name: 'Next.js', icon: 'fas fa-forward', color: '#ffffff' },
+  { name: 'Next.js', icon: 'fas fa-forward', color: 'currentColor' },
   { name: 'Svelte', icon: 'fas fa-fire', color: '#ff3e00' },
   { name: 'Astro', icon: 'fas fa-star', color: '#ff5d01' },
   { name: 'Vite', icon: 'fas fa-bolt', color: '#646cff' },
@@ -40,8 +40,8 @@ export const TECH_MASTER_LIST: TechItem[] = [
 
   // Backend
   { name: 'Node.js', icon: 'fab fa-node-js', color: '#339933' },
-  { name: 'Express', icon: 'fas fa-server', color: '#ffffff' },
-  { name: 'Express.js', icon: 'fas fa-server', color: '#ffffff' },
+  { name: 'Express', icon: 'fas fa-server', color: 'currentColor' },
+  { name: 'Express.js', icon: 'fas fa-server', color: 'currentColor' },
   { name: 'NestJS', icon: 'fas fa-project-diagram', color: '#e0234e' },
   { name: 'Laravel', icon: 'fab fa-laravel', color: '#ff2d20' },
   { name: 'Django', icon: 'fas fa-leaf', color: '#092e20' },
@@ -70,7 +70,7 @@ export const TECH_MASTER_LIST: TechItem[] = [
   // Mobile
   { name: 'Android', icon: 'fab fa-android', color: '#3ddc84' },
   { name: 'React Native', icon: 'fab fa-react', color: '#61dafb' },
-  { name: 'Expo', icon: 'fas fa-mobile-screen-button', color: '#ffffff' },
+  { name: 'Expo', icon: 'fas fa-mobile-screen-button', color: 'currentColor' },
   { name: 'Flutter', icon: 'fas fa-mobile-screen-button', color: '#02569b' },
   { name: 'Ionic', icon: 'fas fa-mobile-alt', color: '#3880ff' },
 
@@ -80,7 +80,7 @@ export const TECH_MASTER_LIST: TechItem[] = [
   { name: 'AWS', icon: 'fab fa-aws', color: '#ff9900' },
   { name: 'Azure', icon: 'fab fa-microsoft', color: '#0078d4' },
   { name: 'Google Cloud', icon: 'fab fa-google', color: '#4285f4' },
-  { name: 'Vercel', icon: 'fas fa-caret-up', color: '#ffffff' },
+  { name: 'Vercel', icon: 'fas fa-caret-up', color: 'currentColor' },
   { name: 'Netlify', icon: 'fas fa-globe', color: '#00c7b7' },
   { name: 'Railway', icon: 'fas fa-train', color: '#7b3ff2' },
   { name: 'GitHub Actions', icon: 'fab fa-github', color: '#2088ff' },
@@ -109,7 +109,7 @@ export const TECH_MASTER_LIST: TechItem[] = [
 
   // Herramientas
   { name: 'Git', icon: 'fab fa-git-alt', color: '#f05032' },
-  { name: 'GitHub', icon: 'fab fa-github', color: '#ffffff' },
+  { name: 'GitHub', icon: 'fab fa-github', color: 'currentColor' },
   { name: 'GitLab', icon: 'fab fa-gitlab', color: '#fc6d26' },
   { name: 'Linux', icon: 'fab fa-linux', color: '#fcc624' },
   { name: 'Bash', icon: 'fas fa-terminal', color: '#4eaa25' },
@@ -124,5 +124,5 @@ export function getTechIcon(techName: string): string {
 
 export function getTechColor(techName: string): string {
   const match = TECH_MASTER_LIST.find(t => t.name.toLowerCase() === techName.toLowerCase());
-  return match ? match.color : 'rgba(255,255,255,0.6)';
+  return match ? match.color : 'currentColor';
 }
