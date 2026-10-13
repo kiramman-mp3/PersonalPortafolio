@@ -229,7 +229,7 @@
               </div>
               
               <!-- Markdown Live Preview -->
-              <div *ngIf="editorMode === 'preview'" class="editor-preview-wrapper project-rich-description" [innerHTML]="projectForm.description | markdown">
+              <div *ngIf="editorMode === 'preview'" class="editor-preview-wrapper rich-text" [innerHTML]="projectForm.description | markdown">
               </div>
             </div>
           </div>
