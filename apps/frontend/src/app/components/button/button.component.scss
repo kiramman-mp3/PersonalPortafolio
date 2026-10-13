@@ -28,13 +28,13 @@
 /* PRIMARY */
 .btn-primary {
   background: linear-gradient(135deg, var(--primary) 0%, var(--purple-bright) 100%);
-  color: #ffffff;
-  box-shadow: 0 10px 30px rgba(77, 53, 255, 0.3);
+  color: var(--on-primary);
+  box-shadow: 0 10px 30px rgb(var(--primary-rgb) / 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
-  box-shadow: 0 15px 40px rgba(77, 53, 255, 0.5);
-  background: linear-gradient(135deg, #5d48ff 0%, #b366ff 100%);
+  box-shadow: 0 15px 40px rgb(var(--primary-rgb) / 0.5);
+  filter: brightness(1.1);
 }
 
 .btn-primary::before {
@@ -62,5 +62,5 @@
 
 .btn-secondary:hover:not(:disabled) {
   background: var(--primary);
-  color: #ffffff;
+  color: var(--on-primary);
 }

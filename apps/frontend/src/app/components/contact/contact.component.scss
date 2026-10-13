@@ -1,9 +1,11 @@
+@use 'breakpoints' as bp;
+
 .contact-section {
   position: relative;
   width: 100%;
-  background: var(--dark);
+  background: var(--bg-color);
   padding: 100px 8% 100px;
-  color: var(--light);
+  color: var(--text-color);
   overflow: hidden;
   z-index: 1;
 
@@ -14,7 +16,7 @@
     left: -10%;
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(77, 53, 255, 0.18), transparent 70%);
+    background: radial-gradient(circle, rgb(var(--primary-rgb) / 0.18), transparent 70%);
     filter: blur(100px);
     pointer-events: none;
     z-index: -1;
@@ -27,7 +29,7 @@
     right: -10%;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.15), transparent 70%);
+    background: radial-gradient(circle, rgb(var(--purple-rgb) / 0.15), transparent 70%);
     filter: blur(100px);
     pointer-events: none;
     z-index: -1;
@@ -42,7 +44,7 @@
   margin: 0 auto;
   align-items: center;
 
-  @media (max-width: 992px) {
+  @include bp.down(lg) {
     grid-template-columns: 1fr;
     gap: 3rem;
   }
@@ -57,9 +59,9 @@
 
 .contact-title {
   font-size: clamp(2.2rem, 4vw, 3rem);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.15;
-  color: var(--light);
+  color: var(--text-color);
   letter-spacing: -0.8px;
   margin: 0;
 }
@@ -67,7 +69,7 @@
 .contact-description {
   font-size: 1.1rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
   margin: 0;
 }
 
@@ -85,11 +87,11 @@
     gap: 0.8rem;
     font-size: 1.05rem;
     font-weight: 500;
-    color: var(--light);
+    color: var(--text-color);
 
     .feature-icon {
       display: inline-flex;
-      color: #3b82f6; /* Blue checkmark color from screenshot */
+      color: rgb(var(--info-rgb));
       font-size: 1.25rem;
     }
   }
@@ -102,13 +104,13 @@
   height: 310px;
   border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 36px rgb(0 0 0 / 0.25);
   transition: transform 0.3s ease, border-color 0.3s ease;
 
   &:hover {
     transform: translateY(-2px);
-    border-color: rgba(77, 53, 255, 0.3);
+    border-color: rgb(var(--primary-rgb) / 0.3);
   }
 
   iframe {
@@ -123,24 +125,25 @@
   z-index: 10;
 }
 
+// Botón sobre el mapa (siempre claro, como los controles de Google Maps)
 .btn-maps {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   background: #ffffff;
   color: #1a1a1a;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid rgb(0 0 0 / 0.12);
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
   transition: all 0.2s ease;
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 6px 16px rgb(0 0 0 / 0.22);
     background: #f3f4f6;
   }
 
@@ -151,13 +154,13 @@
 
 /* Right Column Card & Form */
 .contact-card {
-  background: linear-gradient(135deg, rgba(22, 18, 48, 0.75) 0%, rgba(13, 10, 26, 0.95) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
   border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(77, 53, 255, 0.05);
+  box-shadow: var(--shadow-raised), 0 0 40px rgb(var(--primary-rgb) / 0.05);
 
-  @media (max-width: 480px) {
+  @include bp.down(xs) {
     padding: 1.75rem;
   }
 }
@@ -165,7 +168,7 @@
 .card-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--light);
+  color: var(--text-color);
   margin: 0 0 1.8rem 0;
   letter-spacing: -0.3px;
 }
@@ -184,10 +187,10 @@
   label {
     font-size: 0.9rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--text-color);
 
     .required {
-      color: #ef4444;
+      color: rgb(var(--danger-rgb));
       margin-left: 2px;
     }
   }
@@ -196,28 +199,28 @@
   input[type="email"],
   textarea {
     width: 100%;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--field-bg);
+    border: 1px solid var(--field-border);
     border-radius: 12px;
     padding: 12px 16px;
-    color: var(--light);
+    color: var(--text-color);
     font-size: 0.95rem;
     outline: none;
     transition: all 0.25s ease;
 
     &::placeholder {
-      color: rgba(255, 255, 255, 0.3);
+      color: rgb(var(--ink-rgb) / 0.35);
     }
 
     &:focus {
       border-color: var(--primary);
-      background: rgba(255, 255, 255, 0.07);
-      box-shadow: 0 0 0 3px rgba(77, 53, 255, 0.18);
+      background: var(--field-bg-focus);
+      box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 0.18);
     }
 
     &.invalid.touched {
-      border-color: #ef4444;
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+      border-color: rgb(var(--danger-rgb));
+      box-shadow: 0 0 0 3px rgb(var(--danger-rgb) / 0.15);
     }
   }
 
@@ -235,20 +238,20 @@
   gap: 0.6rem;
   width: 100%;
   background: linear-gradient(135deg, var(--primary), var(--purple-bright));
-  color: var(--light);
+  color: var(--on-primary);
   border: none;
   border-radius: 12px;
   padding: 14px 20px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(77, 53, 255, 0.25);
+  box-shadow: 0 6px 20px rgb(var(--primary-rgb) / 0.25);
   transition: all 0.25s ease;
   margin-top: 0.5rem;
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(77, 53, 255, 0.38);
+    box-shadow: 0 8px 24px rgb(var(--primary-rgb) / 0.38);
     opacity: 0.95;
   }
 
@@ -276,67 +279,14 @@
   line-height: 1.4;
 
   &.success {
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.25);
-    color: #34d399;
+    background: rgb(var(--success-rgb) / 0.1);
+    border: 1px solid rgb(var(--success-rgb) / 0.25);
+    color: var(--success);
   }
 
   &.error {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.25);
-    color: #f87171;
-  }
-}
-
-/* Light Theme overrides */
-body.light-theme {
-  .contact-section {
-    background: var(--bg-color);
-    color: var(--text-color);
-  }
-
-  .contact-title {
-    color: var(--text-color);
-  }
-
-  .contact-description {
-    color: var(--text-muted);
-  }
-
-  .contact-features li {
-    color: var(--text-color);
-  }
-
-  .contact-card {
-    background: var(--card-bg);
-    border-color: var(--card-border);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
-  }
-
-  .card-title {
-    color: var(--text-color);
-  }
-
-  .form-group {
-    label {
-      color: var(--text-color);
-    }
-
-    input[type="text"],
-    input[type="email"],
-    textarea {
-      background: #ffffff;
-      border-color: rgba(15, 23, 42, 0.15);
-      color: #000000;
-
-      &::placeholder {
-        color: rgba(15, 23, 42, 0.4);
-      }
-
-      &:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(77, 53, 255, 0.12);
-      }
-    }
+    background: rgb(var(--danger-rgb) / 0.1);
+    border: 1px solid rgb(var(--danger-rgb) / 0.25);
+    color: var(--danger);
   }
 }
