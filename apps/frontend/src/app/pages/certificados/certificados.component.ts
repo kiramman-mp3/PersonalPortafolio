@@ -58,16 +58,19 @@ export class CertificadosComponent implements OnInit {
         (c) => c.category === filter
       );
     }
+    this.cdr.detectChanges();
   }
 
   openCertificateModal(cert: Certificate): void {
     this.selectedCertificate = cert;
     this.copiedId = false;
+    this.cdr.detectChanges();
   }
 
   closeModal(): void {
     this.selectedCertificate = null;
     this.copiedId = false;
+    this.cdr.detectChanges();
   }
 
   copyCredentialId(id: string): void {
