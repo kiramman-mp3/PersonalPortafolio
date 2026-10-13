@@ -25,6 +25,8 @@ export class CertificateModel {
     skills: string[];
     hours?: number;
     image?: string | null;
+    expirationDate?: string | null;
+    badgeStatus?: string | null;
   }) {
     return await prisma.certificates.create({
       data: data as any

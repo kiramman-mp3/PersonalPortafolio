@@ -20,18 +20,21 @@ export class CertificatesService {
   }
 
   static async updateCertificate(id: string, newData: any) {
+    const validated = CertificateSchema.partial().parse(newData);
     const existing = await CertificateModel.findById(id);
     if (!existing) {
-      throw new Error("Certificate not found");
+      // Si no existe en la base de datos (p. ej. certificado inicial), lo creamos con ese ID
+      const fullValidated = CertificateSchema.parse({ ...newData, id });
+      return CertificateModel.create(fullValidated);
     }
-    const validated = CertificateSchema.partial().parse(newData);
     return CertificateModel.update(id, validated);
   }
 
   static async deleteCertificate(id: string) {
     const existing = await CertificateModel.findById(id);
     if (!existing) {
-      throw new Error("Certificate not found");
+      // Si no existe en la BD (o ya fue eliminado), se considera borrado con éxito
+      return { success: true };
     }
     return CertificateModel.delete(id);
   }

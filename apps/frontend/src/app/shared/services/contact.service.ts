@@ -24,4 +24,16 @@ export class ContactService {
   sendMessage(message: ContactMessage): Observable<ContactMessage> {
     return this.http.post<ContactMessage>(this.apiUrl, message);
   }
+
+  getMessages(token: string): Observable<ContactMessage[]> {
+    return this.http.get<ContactMessage[]>(this.apiUrl, {
+      headers: { 'x-api-key': token }
+    });
+  }
+
+  deleteMessage(id: string, token: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`, {
+      headers: { 'x-api-key': token }
+    });
+  }
 }

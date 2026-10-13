@@ -55,25 +55,13 @@
       </div>
     </div>
 
-    <!-- Interactive Filters -->
+    <!-- Interactive Filters (solo categorías con certificados) -->
     <div class="filters-container">
       <button (click)="setFilter('todos')" class="filter-btn" [class.active]="currentFilter === 'todos'">
         <i class="fas fa-th-large"></i> Todos ({{ certificates.length }})
       </button>
-      <button (click)="setFilter('web')" class="filter-btn" [class.active]="currentFilter === 'web'">
-        <i class="fas fa-code"></i> Web & Frontend
-      </button>
-      <button (click)="setFilter('backend')" class="filter-btn" [class.active]="currentFilter === 'backend'">
-        <i class="fas fa-server"></i> Backend & Arquitectura
-      </button>
-      <button (click)="setFilter('cloud')" class="filter-btn" [class.active]="currentFilter === 'cloud'">
-        <i class="fas fa-cloud"></i> Cloud & DevOps
-      </button>
-      <button (click)="setFilter('database')" class="filter-btn" [class.active]="currentFilter === 'database'">
-        <i class="fas fa-database"></i> Bases de Datos
-      </button>
-      <button (click)="setFilter('mobile')" class="filter-btn" [class.active]="currentFilter === 'mobile'">
-        <i class="fas fa-mobile-alt"></i> Móvil
+      <button *ngFor="let cat of availableCategories" (click)="setFilter(cat.id)" class="filter-btn" [class.active]="currentFilter === cat.id">
+        <i [class]="cat.icon"></i> {{ cat.label }} ({{ cat.count }})
       </button>
     </div>
 
@@ -214,10 +202,8 @@
           <span class="info-val">{{ getCategoryLabel(selectedCertificate.category) }}</span>
         </div>
         <div class="modal-info-item">
-          <span class="info-label"><i class="fas fa-check-circle"></i> Estado</span>
-          <span class="info-val text-success">
-            <i class="fas fa-shield-alt"></i> Verificado
-          </span>
+          <span class="info-label"><i class="fas fa-hourglass-half"></i> Expiración</span>
+          <span class="info-val">{{ selectedCertificate.expirationDate || 'No expira' }}</span>
         </div>
       </div>
 

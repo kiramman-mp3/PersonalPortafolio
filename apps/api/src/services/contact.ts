@@ -17,4 +17,8 @@ export class ContactsService {
         const validated = ContactSchema.parse(data);
         return ContactModel.create(validated);
     }
+
+    static async deleteContact(id: string) {
+        return ContactModel.delete(id);
+    }
 }

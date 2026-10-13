@@ -17,4 +17,10 @@ export class ContactModel {
             data
         });
     }
+
+    static async delete(id: string) {
+        return prisma.contacts.delete({
+            where: { id }
+        });
+    }
 }

@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { CertificatesService } from "../services/certificate.ts";
+import { ZodError } from "zod";
 
 export class CertificateController {
   static async getAll(req: Request, res: Response) {
@@ -34,9 +35,13 @@ export class CertificateController {
       const certificate = await CertificatesService.createCertificate(req.body);
       res.status(201).json(certificate);
     } catch (error) {
+      console.error("Error creating certificate:", error);
+      const msg = error instanceof ZodError 
+        ? error.issues.map(i => i.message).join(", ") 
+        : (error instanceof Error ? error.message : "Error desconocido");
       res.status(400).json({
-        message: "Failed to create certificate",
-        error: error instanceof Error ? error.message : "Unknown error"
+        message: msg,
+        error: msg
       });
     }
   }
@@ -50,9 +55,13 @@ export class CertificateController {
       const certificate = await CertificatesService.updateCertificate(id, req.body);
       res.status(200).json(certificate);
     } catch (error) {
+      console.error("Error updating certificate:", error);
+      const msg = error instanceof ZodError 
+        ? error.issues.map(i => i.message).join(", ") 
+        : (error instanceof Error ? error.message : "Error desconocido");
       res.status(400).json({
-        message: "Failed to update certificate",
-        error: error instanceof Error ? error.message : "Unknown error"
+        message: msg,
+        error: msg
       });
     }
   }

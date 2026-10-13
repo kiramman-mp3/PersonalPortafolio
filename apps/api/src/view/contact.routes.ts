@@ -6,5 +6,6 @@ const contactRouter = Router();
 
 contactRouter.get("/", apiMiddleware, ContactController.getAll);
 contactRouter.post("/", ContactController.create);
+contactRouter.delete("/:id", apiMiddleware, ContactController.delete);
 
 export default contactRouter;

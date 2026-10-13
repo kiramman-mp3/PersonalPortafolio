@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ServicesService, ServiceItem } from '../../shared/services/services.service';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
 import { CertificatesService, Certificate } from '../../shared/services/certificates.service';
+import { ContactService, ContactMessage } from '../../shared/services/contact.service';
 import { TECH_MASTER_LIST } from '../../shared/constants/tech-list';
 import { getBaseApiUrl } from '../../shared/constants/api-url';
 import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
@@ -22,12 +23,15 @@ export class AdminComponent implements OnInit {
   password = '';
   loginError = signal('');
 
-  activeTab: 'services' | 'projects' | 'certificates' = 'services';
+  activeTab: 'services' | 'projects' | 'certificates' | 'contacts' = 'services';
   editorMode: 'write' | 'preview' = 'write';
   
   services = signal<ServiceItem[]>([]);
   projects = signal<Project[]>([]);
   certificates = signal<Certificate[]>([]);
+  contacts = signal<ContactMessage[]>([]);
+  selectedContactMessage = signal<ContactMessage | null>(null);
+  showContactModal = signal(false);
   
   token = signal('');
 
@@ -77,13 +81,15 @@ export class AdminComponent implements OnInit {
     credentialUrl: '',
     description: '',
     hours: 0,
-    image: ''
+    image: '',
+    expirationDate: ''
   };
 
   constructor(
     private servicesService: ServicesService,
     private projectsService: ProjectsService,
     private certificatesService: CertificatesService,
+    private contactService: ContactService,
     private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {}
@@ -147,12 +153,16 @@ export class AdminComponent implements OnInit {
     this.services.set([]);
     this.projects.set([]);
     this.certificates.set([]);
+    this.contacts.set([]);
+    this.selectedContactMessage.set(null);
+    this.showContactModal.set(false);
   }
 
   loadData(): void {
     this.servicesService.getServices().subscribe(data => this.services.set(data));
     this.projectsService.getProjects().subscribe(data => this.projects.set(data));
     this.certificatesService.getCertificates().subscribe(data => this.certificates.set(data));
+    this.loadContacts();
   }
 
   // IMAGE UPLOAD WITH COMPRESSION
@@ -390,7 +400,8 @@ export class AdminComponent implements OnInit {
       credentialUrl: '',
       description: '',
       hours: 0,
-      image: ''
+      image: '',
+      expirationDate: 'No expira'
     };
     this.showCertificateModal.set(true);
   }
@@ -409,7 +420,8 @@ export class AdminComponent implements OnInit {
       credentialUrl: cert.credentialUrl || '',
       description: cert.description,
       hours: cert.hours || 0,
-      image: cert.image || ''
+      image: cert.image || '',
+      expirationDate: cert.expirationDate || 'No expira'
     };
     this.showCertificateModal.set(true);
   }
@@ -426,7 +438,8 @@ export class AdminComponent implements OnInit {
       description: this.certificateForm.description,
       skills: this.selectedTechnologies,
       hours: Number(this.certificateForm.hours) || 0,
-      image: this.certificateForm.image || null
+      image: this.certificateForm.image || null,
+      expirationDate: this.certificateForm.expirationDate || null
     };
 
     if (this.isEditingCertificate) {
@@ -454,6 +467,86 @@ export class AdminComponent implements OnInit {
         next: () => this.loadData(),
         error: (err) => this.handleActionError(err, 'eliminar certificado')
       });
+    }
+  }
+
+  getCategoryLabel(category: string): string {
+    switch (category) {
+      case 'web':
+        return 'Web & Frontend';
+      case 'backend':
+        return 'Backend & Arquitectura';
+      case 'cloud':
+        return 'Cloud & DevOps';
+      case 'database':
+        return 'Bases de Datos';
+      case 'mobile':
+        return 'Móvil & Otros';
+      case 'security':
+      case 'network':
+      case 'redes':
+        return 'Redes & Seguridad';
+      case 'support':
+      case 'helpdesk':
+        return 'Soporte Técnico & Help Desk';
+      case 'iot':
+        return 'IoT & Redes Conectadas';
+      case 'idiomas':
+      case 'languages':
+      case 'ingles':
+        return 'Idiomas';
+      default:
+        return category || 'General';
+    }
+  }
+
+  loadContacts(): void {
+    if (!this.token()) return;
+    this.contactService.getMessages(this.token()).subscribe({
+      next: (data) => this.contacts.set(data),
+      error: (err) => console.error('Error al cargar contactos:', err)
+    });
+  }
+
+  deleteContact(id?: string): void {
+    if (!id) return;
+    if (confirm('¿Estás seguro de que deseas eliminar este mensaje de contacto?')) {
+      this.contactService.deleteMessage(id, this.token()).subscribe({
+        next: () => {
+          this.contacts.set(this.contacts().filter((c) => c.id !== id));
+          if (this.selectedContactMessage()?.id === id) {
+            this.showContactModal.set(false);
+            this.selectedContactMessage.set(null);
+          }
+        },
+        error: (err) => this.handleActionError(err, 'eliminar mensaje de contacto')
+      });
+    }
+  }
+
+  openViewContact(msg: ContactMessage): void {
+    this.selectedContactMessage.set(msg);
+    this.showContactModal.set(true);
+  }
+
+  closeContactModal(): void {
+    this.showContactModal.set(false);
+    this.selectedContactMessage.set(null);
+  }
+
+  formatContactDate(dateStr?: string): string {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return dateStr;
     }
   }
 

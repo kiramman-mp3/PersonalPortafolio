@@ -113,7 +113,47 @@ export const TECH_MASTER_LIST: TechItem[] = [
   { name: 'GitLab', icon: 'fab fa-gitlab', color: '#fc6d26' },
   { name: 'Linux', icon: 'fab fa-linux', color: '#fcc624' },
   { name: 'Bash', icon: 'fas fa-terminal', color: '#4eaa25' },
-  { name: 'VS Code', icon: 'fas fa-code', color: '#007acc' }
+  { name: 'VS Code', icon: 'fas fa-code', color: '#007acc' },
+
+  // Redes & Seguridad
+  { name: 'Network Troubleshooting', icon: 'fas fa-network-wired', color: '#00bceb' },
+  { name: 'Documentation', icon: 'fas fa-book', color: '#f59e0b' },
+  { name: 'Endpoint Devices', icon: 'fas fa-desktop', color: '#6366f1' },
+  { name: 'Help Desk', icon: 'fas fa-headset', color: '#10b981' },
+  { name: 'Support', icon: 'fas fa-users-gear', color: '#06b6d4' },
+  { name: 'User Support', icon: 'fas fa-user-shield', color: '#3b82f6' },
+  { name: 'Cisco', icon: 'fas fa-network-wired', color: '#1ba0d7' },
+  { name: 'Redes', icon: 'fas fa-network-wired', color: '#00bceb' },
+  { name: 'Seguridad', icon: 'fas fa-shield-alt', color: '#10b981' },
+  { name: 'Cybersecurity', icon: 'fas fa-shield-halved', color: '#10b981' },
+
+  // IBM Web Development Competencies
+  { name: 'HTML', icon: 'fab fa-html5', color: '#e34f26' },
+  { name: 'CSS', icon: 'fab fa-css3-alt', color: '#1572b6' },
+  { name: 'IBM', icon: 'fab fa-ibm', color: '#052fad' },
+  { name: 'IBM SkillsBuild', icon: 'fab fa-ibm', color: '#052fad' },
+  { name: 'Web Development', icon: 'fas fa-globe', color: '#2563eb' },
+  { name: 'Web Applications', icon: 'fas fa-window-maximize', color: '#3b82f6' },
+  { name: 'Interactive Web Pages', icon: 'fas fa-laptop-code', color: '#14b8a6' },
+  { name: 'Client-side programming', icon: 'fas fa-code', color: '#3b82f6' },
+  { name: 'API Development', icon: 'fas fa-network-wired', color: '#0284c7' },
+  { name: 'REST API', icon: 'fas fa-server', color: '#0ea5e9' },
+  { name: 'Attention To Detail', icon: 'fas fa-eye', color: '#3b82f6' },
+  { name: 'Critical Thinking', icon: 'fas fa-brain', color: '#8b5cf6' },
+  { name: 'Problem Solving', icon: 'fas fa-puzzle-piece', color: '#f59e0b' },
+  { name: 'Analytical Thinking', icon: 'fas fa-chart-pie', color: '#6366f1' },
+  { name: 'Communication', icon: 'fas fa-comments', color: '#ec4899' },
+  { name: 'Career Management', icon: 'fas fa-briefcase', color: '#10b981' },
+  { name: 'Research', icon: 'fas fa-magnifying-glass', color: '#06b6d4' },
+  { name: 'Learning Agility', icon: 'fas fa-graduation-cap', color: '#eab308' },
+  { name: 'Requirement Analysis', icon: 'fas fa-list-check', color: '#64748b' },
+
+  // IoT Competencies
+  { name: 'IoT', icon: 'fas fa-microchip', color: '#00bceb' },
+  { name: 'Internet Of Things', icon: 'fas fa-wifi', color: '#00bceb' },
+  { name: 'Digital Transformation', icon: 'fas fa-network-wired', color: '#6366f1' },
+  { name: 'Networking', icon: 'fas fa-network-wired', color: '#00bceb' },
+  { name: 'AI/ML', icon: 'fas fa-brain', color: '#ff6f00' }
 
 ];
 
