@@ -241,9 +241,13 @@
     color: var(--text-muted);
   }
 
+  // Not display:flex: a flex <td> drops out of the table layout and misaligns the row borders
   .actions-cell {
-    display: flex;
-    gap: 0.5rem;
+    white-space: nowrap;
+
+    button + button {
+      margin-left: 0.5rem;
+    }
   }
 
   .btn-edit, .btn-delete {
@@ -305,7 +309,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  z-index: 1200; // above the fixed header (1000) and its mobile menu (1100)
   padding: 20px;
 }
 
@@ -376,6 +380,7 @@
 
   input[type="text"],
   input[type="password"],
+  input[type="number"],
   select,
   textarea {
     width: 100%;
@@ -662,7 +667,7 @@
 
 .form-columns-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); // wide markdown preview must not push the right column out
   gap: 2.5rem;
 
   @include bp.down(lg) {
@@ -681,6 +686,10 @@
 
   &:last-child {
     margin-bottom: 0;
+  }
+
+  .form-group + .form-group {
+    margin-top: 1.25rem;
   }
 
   .card-subtitle {
