@@ -4,7 +4,7 @@ import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { NavigationService } from '../../shared/services/navigation.service';
-import { ScrollService } from '../../shared/services/scroll.service';
+import { ScrollService, scrollBehavior } from '../../shared/services/scroll.service';
 import { ThemeService } from '../../shared/services/theme';
 import { signal } from '@angular/core';
 
@@ -73,7 +73,7 @@ export class HeaderComponent implements OnDestroy {
     navigateToProjects(): void {
         if (this.router.url === '/proyectos') {
             // Si ya estamos en proyectos, hacer scroll al inicio
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: scrollBehavior() });
         } else {
             // Navegar a la página de proyectos
             this.router.navigate(['/proyectos']);
@@ -83,7 +83,7 @@ export class HeaderComponent implements OnDestroy {
 
     navigateToServices(): void {
         if (this.router.url === '/servicios') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: scrollBehavior() });
         } else {
             this.router.navigate(['/servicios']);
         }
@@ -92,7 +92,7 @@ export class HeaderComponent implements OnDestroy {
 
     navigateToContact(): void {
         if (this.router.url === '/contacto') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: scrollBehavior() });
         } else {
             this.router.navigate(['/contacto']);
         }
@@ -108,11 +108,8 @@ export class HeaderComponent implements OnDestroy {
     }
 
     getNavbarClasses(): Record<string, boolean> {
-        const isDark = this.themeService.isDarkMode();
         return {
             'scrolled': this.navigationService.isScrolled(),
-            'text-light': isDark,
-            'text-dark': !isDark,
             'open': this.isMenuOpen()
         };
     }
