@@ -127,6 +127,11 @@
     grid-template-columns: 1fr;
     gap: 2.5rem;
   }
+
+  // Sin esto, un <pre> o tabla ancha del markdown estira la columna más allá del viewport
+  > * {
+    min-width: 0;
+  }
 }
 
 /* Main column details */
