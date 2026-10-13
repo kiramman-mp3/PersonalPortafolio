@@ -1,0 +1,21 @@
+@use 'sass:map';
+
+// Escala única de breakpoints. Uso: `@use 'breakpoints' as bp;` y `@include bp.down(md) { ... }`
+$breakpoints: (
+  xs: 480px,
+  sm: 600px,
+  md: 768px,
+  lg: 1024px,
+);
+
+@mixin down($name) {
+  @media (max-width: map.get($breakpoints, $name)) {
+    @content;
+  }
+}
+
+@mixin up($name) {
+  @media (min-width: map.get($breakpoints, $name)) {
+    @content;
+  }
+}
