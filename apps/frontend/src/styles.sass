@@ -1,72 +1,95 @@
+@use 'breakpoints' as bp
 @import '@fortawesome/fontawesome-free/css/all.css'
-@import 'quill/dist/quill.snow.css'
 
+// —— Tokens de diseño ——
+// Los componentes solo usan estas variables; el tema claro redefine las mismas en html.light-theme.
+// --ink-rgb es el color de "tinta" del tema: úsalo para textos, bordes y rellenos translúcidos
+// con rgb(var(--ink-rgb) / 0.1), así un mismo estilo sirve en ambos temas.
 :root
-  /* Variables por defecto (Tema Oscuro). --dark igual al fondo de Servicios/Contacto para evitar flash al cargar. */
+  color-scheme: dark
+
+  // Marca (igual en ambos temas)
   --primary: #4d35ff
-  --accent: #191474
-  --dark: #070812
-  --light: #ffffff
-  --primary-glow: rgba(77, 53, 255, 0.5)
-  --accent-glow: rgba(25, 20, 116, 0.8)
+  --primary-rgb: 77 53 255
   --purple-bright: #a855f7
-  /* Variables estructurales base para fácil swapeo */
-  --text-gradient-sec: #a8b0c3
-  --bg-color: var(--dark)
-  --text-color: var(--light)
-  --card-bg: rgba(255, 255, 255, 0.03)
-  --card-border: rgba(255, 255, 255, 0.1)
-  --card-border-visible: rgba(255, 255, 255, 0.16)
-  --card-accent-ring: rgba(77, 53, 255, 0.2)
-  --card-grad-start: rgba(26, 26, 26, 0.1)
-  --card-grad-mid: rgba(26, 26, 26, 0.7)
-  --card-grad-end: rgba(26, 26, 26, 0.95)
-  --glass-bg: rgba(0, 0, 0, 0.3)
-  --glass-nav: rgba(255, 255, 255, 0.85)
-  --glass-nav-text: var(--dark)
-  --text-muted: rgba(255, 255, 255, 0.72)
-  --text-muted-2: rgba(255, 255, 255, 0.55)
-  --text-muted-3: rgba(255, 255, 255, 0.45)
+  --purple-rgb: 168 85 247
+  --on-primary: #ffffff
 
-body.light-theme
-  /* Variables para Tema Claro */
-  --primary: #4d35ff
-  --accent: #6c63ff
-  --dark: #f8fafc /* Fondo simulando dark pero es claro ahora */
-  --light: #0f172a /* Texto simulando light proveyendo contraste oscuro */
-  --primary-glow: rgba(77, 53, 255, 0.2)
-  --accent-glow: rgba(108, 99, 255, 0.4)
+  // Tipografía
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif
+  --font-display: 'Space Grotesk', var(--font-sans)
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace
+
+  // Tema oscuro (por defecto)
+  --bg-color: #070812
+  --text-color: #ffffff
+  --ink-rgb: 255 255 255
+  --text-muted: rgb(var(--ink-rgb) / 0.72)
+  --text-muted-2: rgb(var(--ink-rgb) / 0.55)
+  --text-muted-3: rgb(var(--ink-rgb) / 0.45)
+  --border: rgb(var(--ink-rgb) / 0.08)
+  --border-strong: rgb(var(--ink-rgb) / 0.15)
+  --surface: rgb(255 255 255 / 0.03)
+  --surface-hover: rgb(255 255 255 / 0.05)
+  --surface-raised: linear-gradient(135deg, rgb(22 18 48 / 0.8) 0%, rgb(13 10 26 / 0.97) 100%)
+  --inset-bg: rgb(0 0 0 / 0.25)
+  --field-bg: rgb(255 255 255 / 0.04)
+  --field-bg-focus: rgb(255 255 255 / 0.07)
+  --field-border: rgb(255 255 255 / 0.1)
+  --shadow-card: 0 10px 30px rgb(0 0 0 / 0.15)
+  --shadow-card-hover: 0 20px 40px rgb(0 0 0 / 0.3)
+  --shadow-raised: 0 20px 50px rgb(0 0 0 / 0.4)
+  --scrollbar-track: rgb(0 0 0 / 0.18)
+  --nav-bg: rgb(0 0 0 / 0.5)
+  --nav-shadow: 0 10px 30px rgb(0 0 0 / 0.5)
+
+  // Estados
+  --success: #34d399
+  --success-rgb: 16 185 129
+  --warning: #fbbf24
+  --warning-rgb: 245 158 11
+  --info: #60a5fa
+  --info-rgb: 59 130 246
+  --danger: #f87171
+  --danger-rgb: 239 68 68
+  --code-color: #f43f5e
+
+html.light-theme
+  color-scheme: light
   --purple-bright: #8b5cf6
-  --text-gradient-sec: #475569
-  --bg-color: var(--dark) /* f8fafc */
-  --text-color: var(--light) /* 0f172a */
-  --card-bg: rgba(255, 255, 255, 0.6)
-  --card-border: rgba(0, 0, 0, 0.05)
-  --card-border-visible: rgba(15, 23, 42, 0.12)
-  --card-accent-ring: rgba(77, 53, 255, 0.18)
-  --card-grad-start: rgba(248, 250, 252, 0.1)
-  --card-grad-mid: rgba(248, 250, 252, 0.8)
-  --card-grad-end: rgba(248, 250, 252, 1)
-  --glass-bg: rgba(255, 255, 255, 0.7)
-  --glass-nav: rgba(255, 255, 255, 0.9)
-  --glass-nav-text: #000000
-  --text-muted: rgba(15, 23, 42, 0.78)
-  --text-muted-2: rgba(15, 23, 42, 0.6)
-  --text-muted-3: rgba(15, 23, 42, 0.5)
+  --bg-color: #f8fafc
+  --text-color: #0f172a
+  --ink-rgb: 15 23 42
+  --surface: rgb(255 255 255 / 0.8)
+  --surface-hover: rgb(255 255 255 / 0.95)
+  --surface-raised: #ffffff
+  --inset-bg: rgb(15 23 42 / 0.03)
+  --field-bg: #ffffff
+  --field-bg-focus: #ffffff
+  --field-border: rgb(15 23 42 / 0.15)
+  --shadow-card: 0 10px 30px rgb(0 0 0 / 0.05)
+  --shadow-card-hover: 0 18px 45px rgb(0 0 0 / 0.09)
+  --shadow-raised: 0 15px 40px rgb(0 0 0 / 0.05)
+  --scrollbar-track: rgb(15 23 42 / 0.08)
+  --nav-bg: rgb(255 255 255 / 0.75)
+  --nav-shadow: 0 10px 30px rgb(0 0 0 / 0.08)
+  --success: #047857
+  --warning: #b45309
+  --info: #1d4ed8
+  --danger: #b91c1c
+  --code-color: #be123c
 
 
-// —— Scrollbar personalizada (colores de la página) ——
-// Tema oscuro (por defecto)
+// —— Scrollbar personalizada ——
 html
   scrollbar-width: thin
-  scrollbar-color: var(--primary) rgba(0, 0, 0, 0.2)
+  scrollbar-color: var(--primary) var(--scrollbar-track)
 
-// Chrome, Safari, Edge (WebKit) - tema oscuro
 html::-webkit-scrollbar
   width: 10px
 
 html::-webkit-scrollbar-track
-  background: rgba(0, 0, 0, 0.18)
+  background: var(--scrollbar-track)
 
 html::-webkit-scrollbar-thumb
   background: linear-gradient(180deg, var(--primary), var(--purple-bright))
@@ -78,61 +101,10 @@ html::-webkit-scrollbar-thumb:hover
 html::-webkit-scrollbar-thumb:active
   background: var(--primary)
 
-// Tema claro: variables en html para que la scrollbar las herede
-html.light-theme
-  --primary: #4d35ff
-  --purple-bright: #8b5cf6
 
-// Firefox - tema claro
-html.light-theme
-  scrollbar-color: #4d35ff rgba(15, 23, 42, 0.1)
-
-// Chrome, Safari, Edge - tema claro
-html.light-theme::-webkit-scrollbar-track
-  background: rgba(15, 23, 42, 0.08)
-
-html.light-theme::-webkit-scrollbar-thumb
-  background: linear-gradient(180deg, #4d35ff, #8b5cf6)
-  border-radius: 10px
-
-html.light-theme::-webkit-scrollbar-thumb:hover
-  background: #8b5cf6
-
-html.light-theme::-webkit-scrollbar-thumb:active
-  background: #4d35ff
-
-
-// Aparición suave solo del contenido debajo de los títulos (no títulos ni header nav)
-// Sin opacity 0 para evitar parpadeo blanco en PCs lentas al hacer scroll o entrar a la sección
-.page-content-reveal
-  animation: page-reveal 0.4s ease-out
-
-@keyframes page-reveal
-  0%
-    opacity: 1
-    transform: translateY(20px)
-  100%
-    opacity: 1
-    transform: translateY(0)
-
-// —— Scroll reveal: secciones que aparecen al hacer scroll (página de inicio) ——
-.scroll-reveal
-  opacity: 0
-  transform: translateY(32px)
-  transition: opacity 0.55s ease-out, transform 0.55s ease-out
-
-  &.scroll-reveal-visible
-    opacity: 1
-    transform: translateY(0)
-
-// En modo claro, el área del inicio tiene fondo claro para no ver negro al hacer scroll
-body.light-theme
-  main.main-outlet
-    background-color: var(--bg-color)
-  .page-content-reveal
-    background-color: var(--bg-color)
-  .scroll-reveal
-    background-color: var(--bg-color)
+// —— Base ——
+*
+  box-sizing: border-box
 
 html, body
   margin: 0
@@ -143,896 +115,346 @@ html, body
   transition: background-color 0.5s ease, color 0.5s ease
 
 body
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif
+  font-family: var(--font-sans)
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
 
-*
-  box-sizing: border-box
+h1, h2, h3, h4
+  font-family: var(--font-display)
 
-// Sección reutilizable (blog, crear-publicacion, etc.)
-.page-section-dark
+button, input, select, textarea
+  font: inherit
+
+code, pre, kbd
+  font-family: var(--font-mono)
+
+:focus-visible
+  outline: 2px solid var(--primary)
+  outline-offset: 3px
+
+main.main-outlet
+  background-color: var(--bg-color)
+
+
+// —— Animaciones de entrada ——
+// Aparición suave solo del contenido debajo de los títulos.
+// Sin opacity 0 para evitar parpadeo blanco en PCs lentas al hacer scroll o entrar a la sección
+.page-content-reveal
+  animation: page-reveal 0.4s ease-out
+  background-color: var(--bg-color)
+
+@keyframes page-reveal
+  0%
+    transform: translateY(20px)
+  100%
+    transform: translateY(0)
+
+// Secciones que aparecen al hacer scroll (página de inicio)
+.scroll-reveal
+  opacity: 0
+  transform: translateY(32px)
+  transition: opacity 0.55s ease-out, transform 0.55s ease-out
+  background-color: var(--bg-color)
+
+  &.scroll-reveal-visible
+    opacity: 1
+    transform: translateY(0)
+
+
+// —— Componentes compartidos ——
+
+// Título de sección del inicio (Sobre mí, Servicios, Proyectos)
+.home-section-header
+  text-align: center
+  margin-bottom: 2.5rem
+
+  .section-title
+    position: relative
+    display: inline-block
+    font-size: 3rem
+    font-weight: 800
+    line-height: 1.1
+    color: var(--text-color)
+    margin: 0
+    padding-bottom: 1.25rem
+    letter-spacing: -1px
+
+    &::after
+      content: ''
+      position: absolute
+      bottom: 0
+      left: 50%
+      transform: translateX(-50%)
+      width: 56px
+      height: 3px
+      background: var(--primary)
+      border-radius: 2px
+
+    @include bp.down(sm)
+      font-size: 2rem
+
+// Título de página (Servicios, Proyectos)
+.page-title
+  font-weight: 800
+  line-height: 1.15
+  margin: 0 0 1.5rem 0
+
+  .title-main,
+  .title-highlight
+    display: block
+    font-size: clamp(2.5rem, 5vw, 3.8rem)
+
+  .title-main
+    color: var(--text-color)
+    letter-spacing: -1px
+
+  .title-highlight
+    background: linear-gradient(135deg, var(--primary), var(--purple-bright))
+    -webkit-background-clip: text
+    -webkit-text-fill-color: transparent
+    background-clip: text
+
+.page-subtitle
+  font-size: 1.15rem
+  line-height: 1.6
+  color: var(--text-muted)
+  margin: 0
+
+// Enlace "Ver más" con subrayado animado
+.view-more-btn
   position: relative
-  min-height: 100vh
-  background: var(--dark)
-  padding: 120px 4% 80px
-  color: var(--light)
-  overflow-x: hidden
-  transform: translateZ(0)
-  backface-visibility: hidden
-
-  &::before
-    content: ''
-    position: absolute
-    top: 10%
-    left: 10%
-    width: 500px
-    height: 500px
-    background: radial-gradient(circle, rgba(77, 53, 255, 0.3), transparent 70%)
-    filter: blur(80px)
-    animation: float1 15s ease-in-out infinite
-    z-index: 0
+  display: inline-flex
+  align-items: center
+  gap: 0.5rem
+  color: var(--primary)
+  text-decoration: none
+  font-weight: 600
+  font-size: 0.9rem
+  padding-bottom: 2px
+  transition: color 0.2s ease, gap 0.2s ease
 
   &::after
     content: ''
     position: absolute
-    bottom: 10%
-    right: 10%
-    width: 400px
-    height: 400px
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.3), transparent 70%)
-    filter: blur(90px)
-    animation: float2 18s ease-in-out infinite
-    z-index: 0
+    left: 0
+    bottom: -2px
+    width: 100%
+    height: 1px
+    background: linear-gradient(90deg, rgb(var(--primary-rgb) / 0.9), rgb(var(--purple-rgb) / 0.9))
+    transform: scaleX(0)
+    transform-origin: left
+    transition: transform 0.25s ease
+    opacity: 0.9
 
-@keyframes float1
-  0%, 100%
-    transform: translate(0, 0) scale(1)
-    opacity: 0.3
-  50%
-    transform: translate(30px, -30px) scale(1.1)
-    opacity: 0.5
-
-@keyframes float2
-  0%, 100%
-    transform: translate(0, 0) scale(1)
-    opacity: 0.3
-  50%
-    transform: translate(-30px, 30px) scale(1.1)
-    opacity: 0.5
-
-.section-container
-  position: relative
-  z-index: 1
-  max-width: 1400px
-  margin: 0 auto
-
-.section-header
-  text-align: center
-  margin-bottom: 2rem
-
-  .section-title
-    display: block
-    font-weight: 800
-    line-height: 1.1
-    margin: 0 0 1rem 0
-
-    .title-main
-      display: block
-      font-size: clamp(2.5rem, 5vw, 4rem)
-      color: var(--light)
-      letter-spacing: -1px
-
-    .title-highlight
-      display: block
-      font-size: clamp(2.5rem, 5vw, 4rem)
-      margin-top: 0.25rem
-      background: linear-gradient(135deg, var(--primary), var(--purple-bright))
-      -webkit-background-clip: text
-      -webkit-text-fill-color: transparent
-      background-clip: text
-      font-weight: 700
-
-  .section-subtitle
-    font-size: 1.1rem
-    color: rgba(255, 255, 255, 0.7)
-    margin: 0
-
-.section-actions
-  display: flex
-  justify-content: center
-  margin-bottom: 2.5rem
-
-  .action-btn
-    display: inline-flex
-    align-items: center
-    gap: 0.75rem
-    padding: 0.75rem 2rem
-    background: var(--primary)
-    color: var(--light)
-    border: none
-    border-radius: 50px
-    font-size: 0.95rem
-    font-weight: 600
-    cursor: pointer
-    transition: all 0.3s ease
-    box-shadow: 0 4px 20px rgba(77, 53, 255, 0.4)
-
-    &:hover
-      background: var(--purple-bright)
-      transform: translateY(-2px)
-      box-shadow: 0 8px 25px rgba(77, 53, 255, 0.5)
-
-.section-grid
-  display: grid
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))
-  gap: 2rem
-
-  @media (max-width: 768px)
-    grid-template-columns: 1fr
-
-.card-wrap
-  position: relative
-  display: flex
-  flex-direction: column
-  gap: 1rem
-
-  .card-actions
-    display: flex
-    gap: 0.75rem
-    flex-wrap: wrap
-
-  .edit-btn,
-  .delete-btn
-    display: inline-flex
-    align-items: center
-    justify-content: center
-    gap: 0.5rem
-    padding: 0.6rem 1.25rem
-    border-radius: 50px
-    font-size: 0.9rem
-    font-weight: 600
-    cursor: pointer
-    transition: all 0.3s ease
-    flex: 1
-    min-width: 0
-
-    i
-      font-size: 0.85rem
-
-  .edit-btn
-    border: 2px solid rgba(255, 255, 255, 0.3)
-    background: rgba(255, 255, 255, 0.05)
-    color: var(--light)
-
-    &:hover
-      border-color: var(--primary)
-      background: rgba(77, 53, 255, 0.2)
-      color: var(--light)
-
-  .delete-btn
-    border: 2px solid rgba(239, 68, 68, 0.5)
-    background: rgba(239, 68, 68, 0.1)
-    color: #fca5a5
-
-    &:hover
-      border-color: #ef4444
-      background: rgba(239, 68, 68, 0.25)
-      color: #fff
-
-.empty-state
-  text-align: center
-  color: rgba(255, 255, 255, 0.7)
-  font-size: 1.05rem
-  margin-top: 2rem
-
-@media (max-width: 768px)
-  .page-section-dark
-    padding: 100px 4% 60px
-
-// Modal y formulario (reutilizado en crear-publicacion y similares)
-.modal-overlay
-  position: fixed
-  inset: 0
-  background: rgba(0, 0, 0, 0.75)
-  backdrop-filter: blur(6px)
-  display: flex
-  align-items: center
-  justify-content: center
-  z-index: 9999
-  padding: 1.5rem
-
-.modal-content
-  position: relative
-  background: linear-gradient(160deg, #1e1e1e 0%, #161616 100%)
-  border: 1px solid rgba(255, 255, 255, 0.08)
-  border-radius: 24px
-  padding: 2.25rem
-  max-width: 520px
-  width: 100%
-  max-height: 90vh
-  overflow-y: auto
-  overflow-x: hidden
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.03)
-  scrollbar-width: none
-  -ms-overflow-style: none
-
-  &::-webkit-scrollbar
-    display: none
-
-.modal-close
-  position: absolute
-  top: 1.25rem
-  right: 1.25rem
-  width: 36px
-  height: 36px
-  display: flex
-  align-items: center
-  justify-content: center
-  background: rgba(255, 255, 255, 0.06)
-  border: 1px solid rgba(255, 255, 255, 0.1)
-  border-radius: 12px
-  color: rgba(255, 255, 255, 0.7)
-  font-size: 1rem
-  cursor: pointer
-  transition: all 0.2s
+  i
+    transition: transform 0.2s ease
+    font-size: 0.8rem
 
   &:hover
-    color: var(--light)
-    background: rgba(255, 255, 255, 0.1)
-    border-color: rgba(255, 255, 255, 0.15)
-
-.modal-title
-  margin: 0 0 1.5rem 0
-  padding-right: 2.5rem
-  font-size: 1.5rem
-  font-weight: 700
-  color: var(--light)
-  letter-spacing: -0.02em
-
-.modal-content--small
-  max-width: 420px
-  padding: 2rem
-
-  .modal-title
-    margin-bottom: 1rem
-
-  .form-row--delete
-    margin-bottom: 0.5rem
-
-  .form-actions--delete
-    margin-top: 2rem
-    padding-top: 0
-
-.modal-text
-  margin: 0 0 1.5rem 0
-  padding: 1rem 1.25rem
-  background: rgba(255, 255, 255, 0.04)
-  border-radius: 14px
-  border: 1px solid rgba(255, 255, 255, 0.06)
-  color: rgba(255, 255, 255, 0.85)
-  font-size: 0.95rem
-  line-height: 1.55
-
-.message
-  padding: 0.875rem 1.25rem
-  border-radius: 14px
-  margin-bottom: 1rem
-  display: flex
-  align-items: center
-  gap: 0.6rem
-  font-size: 0.9rem
-
-  &.success
-    background: rgba(34, 197, 94, 0.12)
-    border: 1px solid rgba(34, 197, 94, 0.25)
-    color: #86efac
-
-  &.error
-    background: rgba(239, 68, 68, 0.12)
-    border: 1px solid rgba(239, 68, 68, 0.25)
-    color: #fca5a5
-
-.publicacion-form
-  display: flex
-  flex-direction: column
-  gap: 1.35rem
-
-.form-row
-  display: flex
-  flex-direction: column
-  gap: 0.5rem
-
-  label
-    font-weight: 600
-    color: rgba(255, 255, 255, 0.95)
-    font-size: 0.9rem
-    letter-spacing: 0.01em
-
-  .required
-    color: #f87171
-
-  input[type="text"],
-  input[type="password"],
-  textarea
-    padding: 0.75rem 1.1rem
-    border: 1px solid rgba(255, 255, 255, 0.12)
-    border-radius: 14px
-    background: rgba(255, 255, 255, 0.04)
-    color: var(--light)
-    font-size: 0.95rem
-    transition: all 0.2s ease
-
-    &::placeholder
-      color: rgba(255, 255, 255, 0.35)
-
-    &:focus
-      outline: none
-      border-color: var(--primary)
-      background: rgba(255, 255, 255, 0.06)
-      box-shadow: 0 0 0 3px rgba(77, 53, 255, 0.15)
-
-  textarea
-    resize: vertical
-    min-height: 88px
-
-  .form-hint
-    font-size: 0.8rem
-    color: rgba(255, 255, 255, 0.45)
-
-.image-upload
-  .file-input
-    display: none
-
-  .upload-btn
-    display: inline-flex
-    align-items: center
-    gap: 0.5rem
-    padding: 0.7rem 1.35rem
-    background: rgba(77, 53, 255, 0.2)
-    border: 1px solid rgba(77, 53, 255, 0.4)
-    color: var(--light)
-    border-radius: 14px
-    font-size: 0.9rem
-    font-weight: 500
-    cursor: pointer
-    transition: all 0.2s
-
-    &:hover
-      background: rgba(77, 53, 255, 0.35)
-      border-color: var(--primary)
-
-  .image-preview
-    margin-top: 0.75rem
-    max-width: 200px
-    border-radius: 14px
-    overflow: hidden
-    border: 1px solid rgba(255, 255, 255, 0.08)
-
-    img
-      width: 100%
-      height: auto
-      display: block
-
-.form-actions
-  margin-top: 0.25rem
-  padding-top: 0.5rem
-
-  &--row
-    display: flex
-    gap: 1rem
-    flex-wrap: wrap
-    margin-top: 0
-    padding-top: 0
-
-  .btn-cancel
-    flex: 1
-    min-width: 0
-    padding: 0.85rem 1.75rem
-    border: 1px solid rgba(255, 255, 255, 0.2)
-    background: rgba(255, 255, 255, 0.05)
-    color: rgba(255, 255, 255, 0.9)
-    border-radius: 14px
-    font-size: 0.95rem
-    font-weight: 600
-    cursor: pointer
-    transition: all 0.2s
-
-    &:hover
-      border-color: rgba(255, 255, 255, 0.3)
-      background: rgba(255, 255, 255, 0.08)
-
-  .btn-submit
-    display: inline-flex
-    align-items: center
-    gap: 0.5rem
-    padding: 0.85rem 1.75rem
-    background: var(--primary)
-    color: var(--light)
-    border: none
-    border-radius: 14px
-    font-size: 0.95rem
-    font-weight: 600
-    cursor: pointer
-    transition: all 0.2s
-    box-shadow: 0 4px 14px rgba(77, 53, 255, 0.25)
-
-    &:hover:not(:disabled)
-      background: var(--purple-bright)
-      transform: translateY(-1px)
-      box-shadow: 0 6px 20px rgba(77, 53, 255, 0.35)
-
-    &:disabled
-      opacity: 0.7
-      cursor: not-allowed
-
-  .btn-submit--danger
-    background: #b91c1c
-    box-shadow: 0 4px 14px rgba(185, 28, 28, 0.3)
-
-    &:hover:not(:disabled)
-      background: #dc2626
-      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4)
-
-// —— Blog: modo claro (mismo sistema que home, en global para que body.light-theme aplique) ——
-body.light-theme
-  .blog-section
-    background: radial-gradient(1200px 600px at 20% 10%, rgba(77, 53, 255, 0.08), transparent 55%), radial-gradient(900px 520px at 85% 80%, rgba(168, 85, 247, 0.06), transparent 55%), var(--bg-color)
-    color: var(--text-color)
-
-  .blog-section::before
-    opacity: 0.08
-
-  .crear-publicacion-section
-    background: radial-gradient(1200px 600px at 20% 10%, rgba(77, 53, 255, 0.08), transparent 55%), radial-gradient(900px 520px at 85% 80%, rgba(168, 85, 247, 0.06), transparent 55%), var(--bg-color)
-
-  .crear-publicacion-section::before
-    opacity: 0.08
-
-  .projects-section
-    background: radial-gradient(1200px 600px at 20% 10%, rgba(77, 53, 255, 0.08), transparent 55%), radial-gradient(900px 520px at 85% 80%, rgba(168, 85, 247, 0.06), transparent 55%), var(--bg-color)
-    color: var(--text-color)
-
-  .projects-section::before
-    opacity: 0.08
-
-  .projects-header .projects-title .title-main
-    color: var(--text-color)
-
-  .projects-header .projects-subtitle
-    color: #0f172a !important
-
-  .projects-section .filter-btn
-    border: 2px solid rgba(15, 23, 42, 0.25) !important
-    background: rgba(255, 255, 255, 0.85) !important
-    color: #0f172a !important
-
-  .projects-section .filter-btn:hover
-    border-color: var(--primary) !important
-    color: var(--primary) !important
-    background: rgba(77, 53, 255, 0.1) !important
-
-  .projects-section .filter-btn.active
-    background: var(--primary) !important
-    border-color: var(--primary) !important
-    color: #ffffff !important
-
-  .projects-section .project-card
-    background: var(--card-bg)
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08)
-
-  .projects-section .project-card:hover
-    box-shadow: 0 18px 55px rgba(77, 53, 255, 0.12), 0 18px 55px rgba(0, 0, 0, 0.1)
-
-  .projects-section .project-content .project-title
-    color: var(--text-color)
-
-  .projects-section .project-content .project-description
-    color: var(--text-muted)
-
-  .projects-section .project-technologies .tech-tag
-    border: 1px solid rgba(15, 23, 42, 0.22) !important
-    background: rgba(255, 255, 255, 0.75) !important
-    color: var(--text-color) !important
-
-  .projects-section .project-technologies .tech-tag:hover
-    border-color: rgba(77, 53, 255, 0.4) !important
-    background: rgba(77, 53, 255, 0.12) !important
-
-  .projects-section .project-image-container
-    background: rgba(77, 53, 255, 0.06)
-
-  .projects-section .project-details .full-description
-    color: #0f172a !important
-
-  .projects-section .project-details .details-title
-    color: #0f172a !important
-
-  .projects-section .project-details .details-list li
-    color: rgba(15, 23, 42, 0.85) !important
-
-  .projects-section .project-details .details-info
-    border-top-color: rgba(15, 23, 42, 0.15) !important
-    border-bottom-color: rgba(15, 23, 42, 0.15) !important
-
-  .projects-section .project-details .details-info .info-item
-    color: rgba(15, 23, 42, 0.8) !important
-
-  .projects-section .project-details .details-info .info-label
-    color: #0f172a !important
-
-  .projects-section .project-details .details-info .info-value
-    color: rgba(15, 23, 42, 0.75) !important
-
-  .projects-section .expand-btn
-    color: var(--primary)
-
-  .projects-section .expand-btn:hover
     color: var(--purple-bright)
+    gap: 0.6rem
 
-  .projects-section .project-details .github-btn
-    color: #ffffff
+    &::after
+      transform: scaleX(1)
 
-  .crear-publicacion-section
-    color: var(--text-color)
+    i
+      transform: translateX(4px)
 
-  .crear-publicacion-section .section-header .section-title .title-main
-    color: var(--text-color)
+// Botón "Ver todos"
+.view-all-container
+  display: flex
+  justify-content: center
+  margin-top: 3.5rem
+  width: 100%
 
-  .crear-publicacion-section .section-subtitle
-    color: rgba(15, 23, 42, 0.85)
+.btn-view-all
+  display: inline-flex
+  align-items: center
+  gap: 0.75rem
+  padding: 12px 30px
+  border-radius: 50px
+  background: linear-gradient(135deg, rgb(var(--primary-rgb) / 0.1), rgb(var(--purple-rgb) / 0.15))
+  border: 1px solid rgb(var(--primary-rgb) / 0.35)
+  color: var(--text-color)
+  font-weight: 700
+  font-size: 0.95rem
+  text-decoration: none
+  transition: all 0.3s ease
+  box-shadow: 0 4px 15px rgb(0 0 0 / 0.1)
 
-  .crear-publicacion-section .empty-state
-    color: var(--text-muted)
+  i
+    font-size: 0.8rem
+    transition: transform 0.2s ease
 
-  .crear-publicacion-section .edit-btn
-    border-color: rgba(15, 23, 42, 0.2)
-    background: rgba(255, 255, 255, 0.7)
-    color: var(--text-color)
-
-  .crear-publicacion-section .edit-btn:hover
+  &:hover
+    background: linear-gradient(135deg, rgb(var(--primary-rgb) / 0.25), rgb(var(--purple-rgb) / 0.3))
     border-color: var(--primary)
-    background: rgba(77, 53, 255, 0.12)
+    transform: translateY(-2px)
+    box-shadow: 0 8px 25px rgb(var(--primary-rgb) / 0.25)
+
+    i
+      transform: translateX(4px)
+
+// Contenido markdown renderizado con [innerHTML]: los estilos de componente no llegan a esos nodos,
+// por eso viven aquí. Tamaños en em para heredar el font-size del contenedor.
+.rich-text
+  line-height: 1.7
+  color: var(--text-muted)
+
+  p
+    margin: 0 0 1em 0
+
+    &:last-child
+      margin-bottom: 0
+
+  h1, h2, h3, h4, h5, h6
     color: var(--text-color)
+    font-weight: 700
+    margin: 1.6em 0 0.8em 0
+    line-height: 1.35
 
-  .crear-publicacion-section .delete-btn
-    border-color: rgba(239, 68, 68, 0.5)
-    background: rgba(239, 68, 68, 0.08)
-    color: #b91c1c
+    &:first-child
+      margin-top: 0
 
-  .crear-publicacion-section .delete-btn:hover
-    border-color: #ef4444
-    background: rgba(239, 68, 68, 0.2)
-    color: #991b1b
+  h1
+    font-size: 1.5em
+    border-bottom: 1px solid var(--border)
+    padding-bottom: 0.4rem
 
-  // Página crear/editar entrada: fondo y textos en modo claro
-  .formulario-entrada-section
-    background: radial-gradient(1200px 600px at 20% 10%, rgba(77, 53, 255, 0.08), transparent 55%), radial-gradient(900px 520px at 85% 80%, rgba(168, 85, 247, 0.06), transparent 55%), var(--bg-color)
-    color: var(--text-color)
+  h2
+    font-size: 1.3em
 
-  .formulario-entrada-section .section-header .section-title .title-main
-    color: var(--text-color)
+  h3
+    font-size: 1.15em
 
-  .formulario-entrada-section .section-subtitle
-    color: rgba(15, 23, 42, 0.85)
+  h4
+    font-size: 1.05em
 
-  .formulario-entrada-back
-    color: rgba(15, 23, 42, 0.85)
-    border-color: rgba(15, 23, 42, 0.16)
-    background: rgba(255, 255, 255, 0.8)
+  a
+    color: var(--primary)
+    text-decoration: underline
+    transition: color 0.2s ease
 
     &:hover
-      color: var(--primary)
-      border-color: rgba(77, 53, 255, 0.4)
-      background: rgba(77, 53, 255, 0.08)
+      color: var(--purple-bright)
 
-  // Fondo del cuadro del editor en modo claro (blanco sólido)
-  .formulario-entrada-section .editor-desc-scroll-wrap
-    background: #ffffff
-    border-color: rgba(15, 23, 42, 0.12)
+  hr
+    border: none
+    height: 1px
+    background: var(--border-strong)
+    margin: 1.5em 0
 
-  // Editor Quill en crear/editar: toolbar y contenido claros (forzar sobre estilos oscuros del componente)
-  .form-row-editor ::ng-deep .ql-toolbar.ql-snow
-    background: #ffffff !important
-    border-color: rgba(15, 23, 42, 0.15) !important
+  ul, ol
+    margin: 0 0 1.2em 0
+    padding-left: 1.5em
 
-  .form-row-editor ::ng-deep .ql-toolbar.ql-snow .ql-stroke
-    stroke: #111827 !important
+    li
+      margin-bottom: 0.5em
 
-  .form-row-editor ::ng-deep .ql-toolbar.ql-snow .ql-fill
-    fill: #111827 !important
+      &:last-child
+        margin-bottom: 0
 
-  .form-row-editor ::ng-deep .ql-toolbar.ql-snow .ql-picker-label,
-  .form-row-editor ::ng-deep .ql-toolbar.ql-snow .ql-picker-item
-    color: #111827 !important
+  code
+    background: rgb(var(--ink-rgb) / 0.08)
+    padding: 2px 6px
+    border-radius: 4px
+    font-size: 0.85em
+    color: var(--code-color)
 
-  .form-row-editor ::ng-deep .ql-container.ql-snow
-    background: #ffffff !important
-    border-color: rgba(15, 23, 42, 0.15) !important
+  pre
+    background: var(--inset-bg)
+    border: 1px solid var(--border)
+    padding: 1.1em
+    border-radius: 10px
+    overflow-x: auto
+    margin: 0 0 1.2em 0
 
-  .form-row-editor ::ng-deep .ql-editor
-    color: var(--text-color) !important
-
-  // Página crear/editar entrada: fondo y textos en modo claro
-  .formulario-entrada-section
-    background: radial-gradient(1200px 600px at 20% 10%, rgba(77, 53, 255, 0.08), transparent 55%), radial-gradient(900px 520px at 85% 80%, rgba(168, 85, 247, 0.06), transparent 55%), var(--bg-color)
-    color: var(--text-color)
-
-  .formulario-entrada-back
-    color: rgba(15, 23, 42, 0.85)
-    border-color: rgba(15, 23, 42, 0.16)
-    background: rgba(255, 255, 255, 0.8)
-
-    &:hover
-      color: var(--primary)
-      border-color: rgba(77, 53, 255, 0.4)
-      background: rgba(77, 53, 255, 0.08)
-
-  .blog-header .blog-title .title-main
-    color: var(--text-color)
-
-  .blog-header .blog-subtitle
-    color: #0f172a !important
-
-  .blog-featured-label
-    color: var(--text-muted-3)
-
-  .blog-featured,
-  .blog-card
-    background: var(--card-bg)
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08)
-
-  .blog-featured:hover,
-  .blog-card:hover
-    box-shadow: 0 18px 55px rgba(77, 53, 255, 0.12), 0 18px 55px rgba(0, 0, 0, 0.1)
-
-  .blog-featured-image,
-  .blog-image-container
-    background: rgba(77, 53, 255, 0.06)
-
-  .img-overlay
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.4) 90%)
-    opacity: 0.5
-
-  .badge-featured
-    color: rgba(15, 23, 42, 0.9)
-    background: rgba(255, 255, 255, 0.85)
-    backdrop-filter: blur(10px)
-    border-color: rgba(15, 23, 42, 0.12)
-
-  .blog-featured-title,
-  .blog-content .blog-title-card
-    color: var(--text-color)
-
-  .blog-featured-description,
-  .blog-content .blog-description
-    color: var(--text-muted)
-
-  .blog-featured-meta
-    color: var(--text-muted-2)
-
-  .blog-grid-title
-    color: var(--text-muted-2)
-
-  .blog-featured-tag,
-  .blog-tags .tag-item
-    border: 1px solid rgba(15, 23, 42, 0.18)
-    background: rgba(255, 255, 255, 0.6)
-    color: var(--text-color)
-
-  .blog-featured-tag:hover,
-  .blog-tags .tag-item:hover
-    border-color: rgba(77, 53, 255, 0.4)
-    background: rgba(77, 53, 255, 0.12)
-
-  .blog-empty
-    color: var(--text-muted)
-
-  // —— Blog detalle (/blog/:id): modo claro ——
-  .blog-detail-section
-    background: var(--bg-color)
-    color: var(--text-color)
-
-  .blog-detail-back
-    color: rgba(15, 23, 42, 0.8)
-    border-color: rgba(15, 23, 42, 0.12)
-    background: rgba(255, 255, 255, 0.7)
-
-    &:hover
-      color: var(--primary)
-      border-color: rgba(77, 53, 255, 0.35)
-      background: rgba(77, 53, 255, 0.08)
-
-  .blog-detail-hero
-    border-color: rgba(15, 23, 42, 0.08)
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(15, 23, 42, 0.06) inset
-
-  .blog-detail-title
-    color: var(--text-color)
-
-  .blog-detail-byline
-    color: var(--text-muted-2)
-
-  .blog-detail-byline-sep
-    color: rgba(15, 23, 42, 0.35)
-
-  .blog-detail-byline-authors
-    color: var(--text-muted-2)
-
-  .blog-detail-description
-    color: var(--text-color)
-
-  // Texto principal del cuerpo HTML del blog en modo claro (forzar en todos los nodos: p, span, .ql-editor, etc.)
-  .blog-detail-body--html,
-  .blog-detail-body--html p,
-  .blog-detail-body--html p:first-of-type,
-  .blog-detail-body--html .ql-editor,
-  .blog-detail-body--html .ql-editor p,
-  .blog-detail-body--html span,
-  .blog-detail-body--html li,
-  .blog-detail-body--html strong,
-  .blog-detail-body--html blockquote,
-  .blog-detail-body--html pre,
-  .blog-detail-body--html code,
-  .blog-detail-body--html .ql-code-block
-    color: var(--text-color) !important
-
-  .blog-detail-body--html table
-    background: rgba(255, 255, 255, 0.7)
-    border-color: rgba(15, 23, 42, 0.22)
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(15, 23, 42, 0.08) inset, 0 0 24px rgba(77, 53, 255, 0.08)
-  .blog-detail-body--html th,
-  .blog-detail-body--html td
-    border-color: rgba(15, 23, 42, 0.18)
-    color: var(--text-color)
-  .blog-detail-body--html th
-    background: linear-gradient(180deg, rgba(77, 53, 255, 0.2) 0%, rgba(77, 53, 255, 0.1) 100%)
-    color: var(--text-color)
-    border-bottom-color: rgba(77, 53, 255, 0.4)
-  .blog-detail-body--html tr:nth-child(odd) td
-    background: rgba(255, 255, 255, 0.5)
-  .blog-detail-body--html tr:nth-child(even) td
-    background: rgba(248, 250, 252, 0.9)
-  .blog-detail-body--html tr:hover td
-    background: rgba(77, 53, 255, 0.06)
-  .blog-detail-body--html img
-    border-color: rgba(15, 23, 42, 0.12)
-
-  .blog-detail-body--html h2
-    color: var(--text-color)
-    border-bottom-color: rgba(77, 53, 255, 0.35)
-  .blog-detail-body--html h3
-    color: var(--text-color)
-  .blog-detail-body--html blockquote
-    background: rgba(77, 53, 255, 0.06)
-    border-top-color: rgba(15, 23, 42, 0.08)
-    color: var(--text-color)
-  .blog-detail-tags
-    border-top-color: rgba(15, 23, 42, 0.12)
-
-  .blog-detail-tags-label
-    color: var(--text-muted-3)
-
-  .blog-detail-tag
-    color: var(--text-color)
-    background: rgba(255, 255, 255, 0.8)
-    border-color: rgba(15, 23, 42, 0.12)
-
-    &:hover
-      background: rgba(77, 53, 255, 0.12)
-      border-color: rgba(77, 53, 255, 0.35)
-
-  .blog-detail-links
-    background: rgba(255, 255, 255, 0.6)
-    border-color: rgba(15, 23, 42, 0.08)
-    box-shadow: inset 0 1px 0 rgba(15, 23, 42, 0.04)
-
-  .blog-detail-links-title
-    color: var(--text-muted-3)
-
-  .blog-detail-loading-text
-    color: var(--text-muted-2)
-
-  .blog-detail-notfound-icon
-    color: var(--text-muted-3)
-
-  .blog-detail-notfound-title
-    color: var(--text-color)
-
-  .blog-detail-notfound-text
-    color: var(--text-muted-2)
-
-  // —— Modal crear/editar/eliminar (blog/crear): modo claro ——
-  .modal-content
-    background: linear-gradient(160deg, #ffffff 0%, #f8fafc 100%)
-    border-color: rgba(15, 23, 42, 0.1)
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.06)
-
-  .modal-close
-    background: rgba(15, 23, 42, 0.06)
-    border-color: rgba(15, 23, 42, 0.12)
-    color: var(--text-color)
-
-    &:hover
+    code
+      background: none
+      padding: 0
+      border-radius: 0
       color: var(--text-color)
-      background: rgba(15, 23, 42, 0.1)
-      border-color: rgba(15, 23, 42, 0.18)
 
-  .modal-title
-    color: var(--text-color)
+  table
+    width: 100%
+    border-collapse: collapse
+    margin: 0 0 1.2em 0
+    font-size: 0.9em
 
-  .modal-text
-    background: rgba(15, 23, 42, 0.05)
-    border-color: rgba(15, 23, 42, 0.1)
-    color: var(--text-color)
+    th, td
+      border: 1px solid var(--border-strong)
+      padding: 8px 14px
+      text-align: left
 
-  // Editor de crear/editar entrada (blog/crear y blog/editar/:id): modo claro
-  .formulario-entrada-section
-    color: var(--text-color)
+    th
+      background: rgb(var(--ink-rgb) / 0.05)
+      font-weight: 600
 
-  .form-row-editor ::ng-deep .ql-toolbar.ql-snow
-    background: #ffffff
-    border-color: rgba(15, 23, 42, 0.15)
+    tr:nth-child(even)
+      background: rgb(var(--ink-rgb) / 0.02)
 
-  .form-row-editor ::ng-deep .ql-container.ql-snow
-    background: #ffffff
-    border-color: rgba(15, 23, 42, 0.15)
+  blockquote
+    border-left: 4px solid var(--primary)
+    margin: 0 0 1.2em 0
+    padding: 0.4em 0 0.4em 1.1em
+    color: var(--text-muted-2)
+    font-style: italic
 
-  .form-row-editor ::ng-deep .ql-editor
-    color: var(--text-color)
+  img
+    max-width: 100%
+    height: auto
+    border-radius: 8px
+    margin: 0.75em 0
+    display: inline-block
+    vertical-align: middle
 
-  .message.success
-    background: rgba(34, 197, 94, 0.1)
-    border-color: rgba(34, 197, 94, 0.3)
-    color: #15803d
+// Spinner de carga
+.loading-spinner-container
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  padding: 6rem 2rem
+  width: 100%
 
-  .message.error
-    background: rgba(239, 68, 68, 0.1)
-    border-color: rgba(239, 68, 68, 0.3)
-    color: #b91c1c
+.premium-spinner
+  width: 60px
+  height: 60px
+  border-radius: 50%
+  background: radial-gradient(farthest-side, var(--primary) 94%, #0000) top/10px 10px no-repeat, conic-gradient(#0000 30%, var(--primary))
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 10px), #000 0)
+  animation: spinner-rotate 0.9s infinite linear
 
-  .form-row label
-    color: var(--text-color)
+.loading-text
+  margin-top: 1.5rem
+  font-size: 1rem
+  color: var(--text-muted)
+  font-weight: 500
+  letter-spacing: 0.8px
+  animation: pulse-text 1.5s infinite ease-in-out
 
-  .form-row .required
-    color: #dc2626
+@keyframes spinner-rotate
+  100%
+    transform: rotate(360deg)
 
-  .form-row input[type="text"],
-  .form-row input[type="password"],
-  .form-row textarea
-    border-color: rgba(15, 23, 42, 0.2)
-    background: rgba(255, 255, 255, 0.9)
-    color: var(--text-color)
+@keyframes pulse-text
+  0%, 100%
+    opacity: 0.45
+  50%
+    opacity: 0.95
 
-    &::placeholder
-      color: rgba(15, 23, 42, 0.45)
 
-    &:focus
-      background: #ffffff
-      border-color: var(--primary)
-      box-shadow: 0 0 0 3px rgba(77, 53, 255, 0.12)
+// —— Movimiento reducido ——
+// Respeta la preferencia del sistema: sin orbes flotantes, reveals ni transiciones largas.
+@media (prefers-reduced-motion: reduce)
+  html
+    scroll-behavior: auto
 
-  .form-row .form-hint
-    color: var(--text-muted-3)
+  *, *::before, *::after
+    animation-duration: 0.01ms !important
+    animation-iteration-count: 1 !important
+    transition-duration: 0.01ms !important
 
-  .image-upload .upload-btn
-    background: rgba(77, 53, 255, 0.1)
-    border-color: rgba(77, 53, 255, 0.35)
-    color: var(--text-color)
-
-    &:hover
-      background: rgba(77, 53, 255, 0.18)
-      border-color: var(--primary)
-
-  .image-upload .image-preview
-    border-color: rgba(15, 23, 42, 0.15)
-
-  .form-actions .btn-cancel
-    border-color: rgba(15, 23, 42, 0.2)
-    background: rgba(255, 255, 255, 0.8)
-    color: var(--text-color)
-
-    &:hover
-      border-color: rgba(15, 23, 42, 0.35)
-      background: rgba(255, 255, 255, 1)
-
+  .scroll-reveal
+    opacity: 1
+    transform: none
