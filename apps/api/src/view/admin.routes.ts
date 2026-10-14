@@ -7,7 +7,15 @@ adminRouter.post("/login", (req: Request, res: Response) => {
     try {
         const body = req.body || {};
         const password = typeof body.password === "string" ? body.password.trim() : "";
-        const adminPassword = (env.ADMIN_PASSWORD || env.API_KEY || "admin123").trim();
+        const adminPassword = (env.ADMIN_PASSWORD || "").trim();
+
+        if (!adminPassword || !env.API_KEY) {
+            console.error("ADMIN_PASSWORD o API_KEY no están configuradas.");
+            return res.status(500).json({
+                success: false,
+                message: "El panel de administración no está configurado."
+            });
+        }
 
         if (!password) {
             return res.status(400).json({
@@ -19,7 +27,7 @@ adminRouter.post("/login", (req: Request, res: Response) => {
         if (password === adminPassword) {
             return res.status(200).json({ 
                 success: true, 
-                token: env.API_KEY || "some-api-key"
+                token: env.API_KEY
             });
         } else {
             return res.status(401).json({ 
