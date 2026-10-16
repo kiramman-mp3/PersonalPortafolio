@@ -47,3 +47,5 @@ Thumbs.db
 
 # Cobertura y pruebas
 coverage/
+.vercel
+.env*
