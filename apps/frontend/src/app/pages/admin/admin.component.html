@@ -2,7 +2,7 @@
   <div class="admin-container">
     
     <!-- Login View -->
-    <div *ngIf="!isLoggedIn" class="admin-login-card">
+    <div *ngIf="!isLoggedIn() && !token()" class="admin-login-card">
       <h2>Panel de Administración</h2>
       <p class="login-sub">Introduce la contraseña de administrador para continuar.</p>
       
@@ -11,13 +11,13 @@
           <label for="pass">Contraseña</label>
           <input type="password" id="pass" [(ngModel)]="password" name="password" placeholder="••••••••" required />
         </div>
-        <div *ngIf="loginError" class="login-error">{{ loginError }}</div>
+        <div *ngIf="loginError()" class="login-error">{{ loginError() }}</div>
         <button type="submit" class="btn-primary-admin">Acceder</button>
       </form>
     </div>
 
     <!-- Dashboard View -->
-    <div *ngIf="isLoggedIn && !showProjectModal" class="admin-dashboard">
+    <div *ngIf="isLoggedIn() && !showProjectModal()" class="admin-dashboard">
       <div class="dashboard-header">
         <h1>Administración</h1>
         <button (click)="onLogout()" class="btn-logout">
@@ -32,6 +32,12 @@
         </button>
         <button (click)="activeTab = 'projects'" [class.active]="activeTab === 'projects'">
           <i class="fas fa-folder-open"></i> Proyectos
+        </button>
+        <button (click)="activeTab = 'certificates'" [class.active]="activeTab === 'certificates'">
+          <i class="fas fa-certificate"></i> Certificados
+        </button>
+        <button (click)="activeTab = 'contacts'" [class.active]="activeTab === 'contacts'">
+          <i class="fas fa-envelope"></i> Contactos <span *ngIf="contacts().length > 0" class="badge-tab-count">{{ contacts().length }}</span>
         </button>
       </div>
 
@@ -54,7 +60,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let s of services">
+              <tr *ngFor="let s of services()">
                 <td class="font-bold">{{ s.title }}</td>
                 <td class="desc-cell">{{ s.description }}</td>
                 <td class="actions-cell">
@@ -91,7 +97,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let p of projects">
+              <tr *ngFor="let p of projects()">
                 <td class="font-bold">{{ p.title }}</td>
                 <td>
                   <span class="status-badge" [ngClass]="p.status">
@@ -113,85 +119,132 @@
         </div>
       </div>
 
-    </div>
+      <!-- Certificates List Tab -->
+      <div *ngIf="activeTab === 'certificates'" class="tab-content">
+        <div class="tab-header">
+          <h2>Lista de Certificados</h2>
+          <button (click)="openAddCertificate()" class="btn-add">
+            <i class="fas fa-plus"></i> Nuevo Certificado
+          </button>
+        </div>
 
-  </div>
-
-  <!-- Service Modal -->
-  <div *ngIf="showServiceModal" class="modal-overlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>{{ isEditingService ? 'Editar Servicio' : 'Nuevo Servicio' }}</h3>
-        <button (click)="showServiceModal = false" class="close-modal">&times;</button>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Certificado</th>
+                <th>Emisor</th>
+                <th>Fecha / Horas</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of certificates()">
+                <td class="font-bold">
+                  <div class="table-item-cell">
+                    <img *ngIf="c.image" [src]="c.image" class="admin-table-thumb" [alt]="c.title" />
+                    <div *ngIf="!c.image" class="admin-table-thumb-icon">
+                      <i [class]="c.issuerIcon || 'fas fa-certificate'"></i>
+                    </div>
+                    <span>{{ c.title }}</span>
+                  </div>
+                </td>
+                <td>{{ c.issuer }}</td>
+                <td>{{ c.date }} <span *ngIf="c.hours" class="hours-badge">{{ c.hours }}h</span></td>
+                <td><span class="badge-cat">{{ getCategoryLabel(c.category) }}</span></td>
+                <td class="actions-cell">
+                  <button (click)="openEditCertificate(c)" class="btn-edit" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button (click)="deleteCertificate(c.id)" class="btn-delete" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="certificates().length === 0">
+                <td colspan="5" class="empty-state-cell">No hay certificados registrados aún. ¡Añade el primero!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <form (submit)="saveService(); $event.preventDefault()" class="admin-form">
-        <div class="form-group">
-          <label>Título *</label>
-          <input type="text" [(ngModel)]="serviceForm.title" name="title" required />
-        </div>
-        <div class="form-group">
-          <label>Descripción Corta *</label>
-          <textarea [(ngModel)]="serviceForm.description" name="description" required></textarea>
-          <span class="hint-label">* Soporta Markdown (p. ej., **negrita**, *cursiva*, [enlace](url), `código`)</span>
-        </div>
-        <div class="form-group">
-          <label>Imagen del Servicio *</label>
-          <div class="image-upload-wrapper">
-            <input type="file" (change)="onImageSelected($event, 'service')" accept="image/*" class="file-input" />
-            <div class="or-separator">O introduce una URL:</div>
-            <input type="text" [(ngModel)]="serviceForm.imageUrl" name="imageUrl" placeholder="https://..." />
-          </div>
-          <div *ngIf="serviceForm.imageUrl" class="image-preview-thumbnail">
-            <img [src]="serviceForm.imageUrl" alt="Preview" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Texto Alt de Imagen</label>
-          <input type="text" [(ngModel)]="serviceForm.imageAlt" name="imageAlt" />
-        </div>
-        <div class="form-group">
-          <label>Información Extendida (Una línea por cada beneficio/punto)</label>
-          <textarea [(ngModel)]="serviceForm.extendedInfoStr" name="extendedInfo" placeholder="Punto 1&#10;Punto 2"></textarea>
-        </div>
-        
-        <!-- Technologies Selector -->
-        <div class="form-group">
-          <label>Tecnologías Relacionadas</label>
-          <div class="tech-select-container">
-            <div class="tech-select-grid">
-              <button type="button" *ngFor="let tech of techMasterList" 
-                      (click)="toggleTechnology(tech.name)" 
-                      [class.selected]="isTechSelected(tech.name)" 
-                      class="tech-select-btn">
-                <i [class]="tech.icon"></i> {{ tech.name }}
-              </button>
-            </div>
-            <div class="custom-tech-input-row">
-              <input type="text" [(ngModel)]="customTechName" name="customTech" placeholder="Tecnología personalizada" />
-              <button type="button" (click)="addCustomTechnology()" class="btn-add-custom-tech">Añadir</button>
-            </div>
-            <div class="selected-techs-summary" *ngIf="selectedTechnologies.length > 0">
-              <span class="summary-label">Seleccionadas:</span>
-              <span *ngFor="let s of selectedTechnologies" class="selected-tech-badge">
-                {{ s }} <i class="fas fa-times remove-tech-icon" (click)="toggleTechnology(s)"></i>
-              </span>
-            </div>
-          </div>
+
+      <!-- Contacts List Tab -->
+      <div *ngIf="activeTab === 'contacts'" class="tab-content">
+        <div class="tab-header">
+          <h2>Mensajes de Contacto ({{ contacts().length }})</h2>
+          <button (click)="loadContacts()" class="btn-refresh" title="Actualizar lista">
+            <i class="fas fa-sync-alt"></i> Actualizar
+          </button>
         </div>
 
-        <div class="modal-actions">
-          <button type="button" (click)="showServiceModal = false" class="btn-cancel">Cancelar</button>
-          <button type="submit" class="btn-save">Guardar</button>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Remitente</th>
+                <th>Asunto</th>
+                <th>Mensaje</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let msg of contacts()">
+                <td class="font-bold">
+                  <div class="contact-sender-cell">
+                    <div class="contact-avatar-icon">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <div class="contact-sender-meta">
+                      <span class="sender-name">{{ msg.name }}</span>
+                      <a [href]="'mailto:' + msg.email" class="sender-email">
+                        <i class="fas fa-envelope"></i> {{ msg.email }}
+                      </a>
+                    </div>
+                  </div>
+                </td>
+                <td class="subject-cell">
+                  <span class="badge-subject" *ngIf="msg.subject">{{ msg.subject }}</span>
+                  <span class="text-muted-alt" *ngIf="!msg.subject">Sin asunto</span>
+                </td>
+                <td class="desc-cell contact-msg-cell">
+                  <p class="contact-message-preview">{{ msg.message }}</p>
+                </td>
+                <td class="date-cell">
+                  <span class="contact-date-badge">{{ formatContactDate(msg.createdAt) }}</span>
+                </td>
+                <td class="actions-cell">
+                  <button (click)="openViewContact(msg)" class="btn-view" title="Ver mensaje completo">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <a [href]="'mailto:' + msg.email + '?subject=Re: ' + (msg.subject || 'Contacto JohanDev')" 
+                     class="btn-reply" title="Responder por correo">
+                    <i class="fas fa-reply"></i>
+                  </a>
+                  <button (click)="deleteContact(msg.id)" class="btn-delete" title="Eliminar mensaje">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="contacts().length === 0">
+                <td colspan="5" class="empty-state-cell">No hay mensajes de contacto recibidos por el momento.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </form>
+      </div>
+
     </div>
+
   </div>
 
   <!-- Full-Page Project Form -->
-  <div *ngIf="isLoggedIn && showProjectModal" class="admin-full-page-form">
+  <div *ngIf="isLoggedIn() && showProjectModal()" class="admin-full-page-form">
     <div class="form-header">
       <h2>{{ isEditingProject ? 'Editar Proyecto' : 'Nuevo Proyecto' }}</h2>
-      <button (click)="showProjectModal = false" class="btn-back-dashboard">
+      <button (click)="showProjectModal.set(false)" class="btn-back-dashboard">
         <i class="fas fa-arrow-left"></i> Volver al Panel
       </button>
     </div>
@@ -229,7 +282,7 @@
               </div>
               
               <!-- Markdown Live Preview -->
-              <div *ngIf="editorMode === 'preview'" class="editor-preview-wrapper project-rich-description" [innerHTML]="projectForm.description | markdown">
+              <div *ngIf="editorMode === 'preview'" class="editor-preview-wrapper rich-text" [innerHTML]="projectForm.description | markdown">
               </div>
             </div>
           </div>
@@ -321,10 +374,250 @@
       </div>
 
       <div class="form-sticky-footer">
-        <button type="button" (click)="showProjectModal = false" class="btn-cancel-large">Cancelar</button>
+        <button type="button" (click)="showProjectModal.set(false)" class="btn-cancel-large">Cancelar</button>
         <button type="submit" class="btn-save-large">Guardar Cambios</button>
       </div>
     </form>
   </div>
 
 </section>
+
+  <!-- Service Modal -->
+  <div *ngIf="showServiceModal()" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{ isEditingService ? 'Editar Servicio' : 'Nuevo Servicio' }}</h3>
+        <button (click)="showServiceModal.set(false)" class="close-modal">&times;</button>
+      </div>
+      <form (submit)="saveService(); $event.preventDefault()" class="admin-form">
+        <div class="form-group">
+          <label>Título *</label>
+          <input type="text" [(ngModel)]="serviceForm.title" name="title" required />
+        </div>
+        <div class="form-group">
+          <label>Descripción Corta *</label>
+          <textarea [(ngModel)]="serviceForm.description" name="description" required></textarea>
+          <span class="hint-label">* Soporta Markdown (p. ej., **negrita**, *cursiva*, [enlace](url), `código`)</span>
+        </div>
+        <div class="form-group">
+          <label>Imagen del Servicio *</label>
+          <div class="image-upload-wrapper">
+            <input type="file" (change)="onImageSelected($event, 'service')" accept="image/*" class="file-input" />
+            <div class="or-separator">O introduce una URL:</div>
+            <input type="text" [(ngModel)]="serviceForm.imageUrl" name="imageUrl" placeholder="https://..." />
+          </div>
+          <div *ngIf="serviceForm.imageUrl" class="image-preview-thumbnail">
+            <img [src]="serviceForm.imageUrl" alt="Preview" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Texto Alt de Imagen</label>
+          <input type="text" [(ngModel)]="serviceForm.imageAlt" name="imageAlt" />
+        </div>
+        <div class="form-group">
+          <label>Información Extendida (Una línea por cada beneficio/punto)</label>
+          <textarea [(ngModel)]="serviceForm.extendedInfoStr" name="extendedInfo" placeholder="Punto 1&#10;Punto 2"></textarea>
+        </div>
+        
+        <!-- Technologies Selector -->
+        <div class="form-group">
+          <label>Tecnologías Relacionadas</label>
+          <div class="tech-select-container">
+            <div class="tech-select-grid">
+              <button type="button" *ngFor="let tech of techMasterList" 
+                      (click)="toggleTechnology(tech.name)" 
+                      [class.selected]="isTechSelected(tech.name)" 
+                      class="tech-select-btn">
+                <i [class]="tech.icon"></i> {{ tech.name }}
+              </button>
+            </div>
+            <div class="custom-tech-input-row">
+              <input type="text" [(ngModel)]="customTechName" name="customTech" placeholder="Tecnología personalizada" />
+              <button type="button" (click)="addCustomTechnology()" class="btn-add-custom-tech">Añadir</button>
+            </div>
+            <div class="selected-techs-summary" *ngIf="selectedTechnologies.length > 0">
+              <span class="summary-label">Seleccionadas:</span>
+              <span *ngFor="let s of selectedTechnologies" class="selected-tech-badge">
+                {{ s }} <i class="fas fa-times remove-tech-icon" (click)="toggleTechnology(s)"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" (click)="showServiceModal.set(false)" class="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn-save">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Certificate Modal -->
+  <div *ngIf="showCertificateModal()" class="modal-overlay">
+    <div class="modal-content modal-content-lg">
+      <div class="modal-header">
+        <h3>{{ isEditingCertificate ? 'Editar Certificado' : 'Nuevo Certificado' }}</h3>
+        <button (click)="showCertificateModal.set(false)" class="close-modal">&times;</button>
+      </div>
+      <form (submit)="saveCertificate(); $event.preventDefault()" class="admin-form">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Título del Certificado *</label>
+            <input type="text" [(ngModel)]="certificateForm.title" name="certTitle" placeholder="Ej. Full Stack Web Developer" required />
+          </div>
+          <div class="form-group">
+            <label>Emisor / Institución *</label>
+            <input type="text" [(ngModel)]="certificateForm.issuer" name="certIssuer" placeholder="Ej. Platzi, Udemy, Cisco..." required />
+          </div>
+        </div>
+
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>Categoría *</label>
+            <select [(ngModel)]="certificateForm.category" name="certCategory" required>
+              <option value="web">Web & Frontend</option>
+              <option value="backend">Backend & Arquitectura</option>
+              <option value="cloud">Cloud & DevOps</option>
+              <option value="database">Bases de Datos</option>
+              <option value="mobile">Móvil & Otros</option>
+              <option value="security">Redes & Seguridad</option>
+              <option value="support">Soporte Técnico & Help Desk</option>
+              <option value="iot">IoT & Redes Conectadas</option>
+              <option value="idiomas">Idiomas & Suficiencia</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha / Año *</label>
+            <input type="text" [(ngModel)]="certificateForm.date" name="certDate" placeholder="Ej. 2024 o Marzo 2024" required />
+          </div>
+          <div class="form-group">
+            <label>Horas de Formación</label>
+            <input type="number" [(ngModel)]="certificateForm.hours" name="certHours" placeholder="Ej. 40" />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>ID de Credencial *</label>
+            <input type="text" [(ngModel)]="certificateForm.credentialId" name="certCredId" placeholder="Ej. CERT-98234 o ID de verificación" required />
+          </div>
+          <div class="form-group">
+            <label>Ícono de Emisor (FontAwesome)</label>
+            <input type="text" [(ngModel)]="certificateForm.issuerIcon" name="certIcon" placeholder="fas fa-certificate, fab fa-aws, etc." />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>URL de Credencial / Verificación (Opcional)</label>
+          <input type="text" [(ngModel)]="certificateForm.credentialUrl" name="certUrl" placeholder="https://..." />
+        </div>
+
+        <div class="form-group">
+          <label>Fecha de Expiración (Opcional)</label>
+          <input type="text" [(ngModel)]="certificateForm.expirationDate" name="certExpirationDate" placeholder="Ej. No expira, 12/2026..." />
+        </div>
+
+        <!-- Image Upload -->
+        <div class="form-group">
+          <label>Imagen del Certificado (Diploma / Captura)</label>
+          <div class="image-upload-wrapper">
+            <input type="file" (change)="onImageSelected($event, 'certificate')" accept="image/*" class="file-input" />
+            <div class="or-separator">O introduce una URL de imagen:</div>
+            <input type="text" [(ngModel)]="certificateForm.image" name="certImageUrl" placeholder="https://..." />
+          </div>
+          <div *ngIf="certificateForm.image" class="image-preview-thumbnail cert-preview-thumb">
+            <img [src]="certificateForm.image" alt="Vista previa del certificado" />
+            <button type="button" (click)="certificateForm.image = ''" class="btn-clear-img" title="Eliminar imagen">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Descripción del Certificado *</label>
+          <textarea [(ngModel)]="certificateForm.description" name="certDescription" placeholder="Detalles de los conocimientos adquiridos, proyectos realizados..." rows="3" required></textarea>
+        </div>
+
+        <!-- Technologies / Skills Selector -->
+        <div class="form-group">
+          <label>Habilidades & Tecnologías Adquiridas</label>
+          <div class="tech-select-container">
+            <div class="tech-select-grid">
+              <button type="button" *ngFor="let tech of techMasterList" 
+                      (click)="toggleTechnology(tech.name)" 
+                      [class.selected]="isTechSelected(tech.name)" 
+                      class="tech-select-btn">
+                <i [class]="tech.icon"></i> {{ tech.name }}
+              </button>
+            </div>
+            <div class="custom-tech-input-row">
+              <input type="text" [(ngModel)]="customTechName" name="customTech" placeholder="Añadir otra tecnología / habilidad" />
+              <button type="button" (click)="addCustomTechnology()" class="btn-add-custom-tech">Añadir</button>
+            </div>
+            <div class="selected-techs-summary" *ngIf="selectedTechnologies.length > 0">
+              <span class="summary-label">Seleccionadas:</span>
+              <span *ngFor="let s of selectedTechnologies" class="selected-tech-badge">
+                {{ s }} <i class="fas fa-times remove-tech-icon" (click)="toggleTechnology(s)"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" (click)="showCertificateModal.set(false)" class="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn-save">Guardar Certificado</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Contact Message Detail Modal -->
+  <div *ngIf="showContactModal() && selectedContactMessage()" class="modal-overlay" (click)="closeContactModal()">
+    <div class="modal-content modal-contact-detail" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fas fa-envelope-open-text"></i> Detalle del Mensaje</h3>
+        <button (click)="closeContactModal()" class="close-modal">&times;</button>
+      </div>
+      <div class="contact-detail-body">
+        <div class="contact-detail-meta-grid">
+          <div class="meta-item">
+            <span class="meta-label"><i class="fas fa-user"></i> Remitente</span>
+            <span class="meta-value">{{ selectedContactMessage()?.name }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label"><i class="fas fa-envelope"></i> Correo</span>
+            <a [href]="'mailto:' + selectedContactMessage()?.email" class="meta-value email-link">
+              {{ selectedContactMessage()?.email }}
+            </a>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label"><i class="fas fa-tag"></i> Asunto</span>
+            <span class="meta-value">{{ selectedContactMessage()?.subject || 'Sin asunto' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label"><i class="fas fa-calendar-alt"></i> Fecha de Recepción</span>
+            <span class="meta-value">{{ formatContactDate(selectedContactMessage()?.createdAt) }}</span>
+          </div>
+        </div>
+
+        <div class="contact-detail-message-box">
+          <h4>Mensaje:</h4>
+          <div class="contact-full-message-text">
+            {{ selectedContactMessage()?.message }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions contact-modal-actions">
+        <button type="button" (click)="deleteContact(selectedContactMessage()?.id)" class="btn-delete-contact">
+          <i class="fas fa-trash"></i> Eliminar
+        </button>
+        <div class="actions-right">
+          <button type="button" (click)="closeContactModal()" class="btn-cancel">Cerrar</button>
+          <a [href]="'mailto:' + selectedContactMessage()?.email + '?subject=Re: ' + (selectedContactMessage()?.subject || 'Contacto JohanDev')"
+             class="btn-save btn-reply-email">
+            <i class="fas fa-reply"></i> Responder
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -16,13 +16,7 @@ export class ThemeService {
       if (isPlatformBrowser(this.platformId)) {
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
 
-        if (isDark) {
-          document.body.classList.remove('light-theme');
-          document.documentElement.classList.remove('light-theme');
-        } else {
-          document.body.classList.add('light-theme');
-          document.documentElement.classList.add('light-theme');
-        }
+        document.documentElement.classList.toggle('light-theme', !isDark);
       }
     });
   }

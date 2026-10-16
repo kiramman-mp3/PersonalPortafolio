@@ -17,7 +17,7 @@ export const TECH_MASTER_LIST: TechItem[] = [
   { name: 'React', icon: 'fab fa-react', color: '#61dafb' },
   { name: 'Vue.js', icon: 'fab fa-vuejs', color: '#42b883' },
   { name: 'Nuxt.js', icon: 'fas fa-layer-group', color: '#00dc82' },
-  { name: 'Next.js', icon: 'fas fa-forward', color: '#ffffff' },
+  { name: 'Next.js', icon: 'fas fa-forward', color: 'currentColor' },
   { name: 'Svelte', icon: 'fas fa-fire', color: '#ff3e00' },
   { name: 'Astro', icon: 'fas fa-star', color: '#ff5d01' },
   { name: 'Vite', icon: 'fas fa-bolt', color: '#646cff' },
@@ -40,8 +40,8 @@ export const TECH_MASTER_LIST: TechItem[] = [
 
   // Backend
   { name: 'Node.js', icon: 'fab fa-node-js', color: '#339933' },
-  { name: 'Express', icon: 'fas fa-server', color: '#ffffff' },
-  { name: 'Express.js', icon: 'fas fa-server', color: '#ffffff' },
+  { name: 'Express', icon: 'fas fa-server', color: 'currentColor' },
+  { name: 'Express.js', icon: 'fas fa-server', color: 'currentColor' },
   { name: 'NestJS', icon: 'fas fa-project-diagram', color: '#e0234e' },
   { name: 'Laravel', icon: 'fab fa-laravel', color: '#ff2d20' },
   { name: 'Django', icon: 'fas fa-leaf', color: '#092e20' },
@@ -70,7 +70,7 @@ export const TECH_MASTER_LIST: TechItem[] = [
   // Mobile
   { name: 'Android', icon: 'fab fa-android', color: '#3ddc84' },
   { name: 'React Native', icon: 'fab fa-react', color: '#61dafb' },
-  { name: 'Expo', icon: 'fas fa-mobile-screen-button', color: '#ffffff' },
+  { name: 'Expo', icon: 'fas fa-mobile-screen-button', color: 'currentColor' },
   { name: 'Flutter', icon: 'fas fa-mobile-screen-button', color: '#02569b' },
   { name: 'Ionic', icon: 'fas fa-mobile-alt', color: '#3880ff' },
 
@@ -80,7 +80,7 @@ export const TECH_MASTER_LIST: TechItem[] = [
   { name: 'AWS', icon: 'fab fa-aws', color: '#ff9900' },
   { name: 'Azure', icon: 'fab fa-microsoft', color: '#0078d4' },
   { name: 'Google Cloud', icon: 'fab fa-google', color: '#4285f4' },
-  { name: 'Vercel', icon: 'fas fa-caret-up', color: '#ffffff' },
+  { name: 'Vercel', icon: 'fas fa-caret-up', color: 'currentColor' },
   { name: 'Netlify', icon: 'fas fa-globe', color: '#00c7b7' },
   { name: 'Railway', icon: 'fas fa-train', color: '#7b3ff2' },
   { name: 'GitHub Actions', icon: 'fab fa-github', color: '#2088ff' },
@@ -109,11 +109,51 @@ export const TECH_MASTER_LIST: TechItem[] = [
 
   // Herramientas
   { name: 'Git', icon: 'fab fa-git-alt', color: '#f05032' },
-  { name: 'GitHub', icon: 'fab fa-github', color: '#ffffff' },
+  { name: 'GitHub', icon: 'fab fa-github', color: 'currentColor' },
   { name: 'GitLab', icon: 'fab fa-gitlab', color: '#fc6d26' },
   { name: 'Linux', icon: 'fab fa-linux', color: '#fcc624' },
   { name: 'Bash', icon: 'fas fa-terminal', color: '#4eaa25' },
-  { name: 'VS Code', icon: 'fas fa-code', color: '#007acc' }
+  { name: 'VS Code', icon: 'fas fa-code', color: '#007acc' },
+
+  // Redes & Seguridad
+  { name: 'Network Troubleshooting', icon: 'fas fa-network-wired', color: '#00bceb' },
+  { name: 'Documentation', icon: 'fas fa-book', color: '#f59e0b' },
+  { name: 'Endpoint Devices', icon: 'fas fa-desktop', color: '#6366f1' },
+  { name: 'Help Desk', icon: 'fas fa-headset', color: '#10b981' },
+  { name: 'Support', icon: 'fas fa-users-gear', color: '#06b6d4' },
+  { name: 'User Support', icon: 'fas fa-user-shield', color: '#3b82f6' },
+  { name: 'Cisco', icon: 'fas fa-network-wired', color: '#1ba0d7' },
+  { name: 'Redes', icon: 'fas fa-network-wired', color: '#00bceb' },
+  { name: 'Seguridad', icon: 'fas fa-shield-alt', color: '#10b981' },
+  { name: 'Cybersecurity', icon: 'fas fa-shield-halved', color: '#10b981' },
+
+  // IBM Web Development Competencies
+  { name: 'HTML', icon: 'fab fa-html5', color: '#e34f26' },
+  { name: 'CSS', icon: 'fab fa-css3-alt', color: '#1572b6' },
+  { name: 'IBM', icon: 'fab fa-ibm', color: '#052fad' },
+  { name: 'IBM SkillsBuild', icon: 'fab fa-ibm', color: '#052fad' },
+  { name: 'Web Development', icon: 'fas fa-globe', color: '#2563eb' },
+  { name: 'Web Applications', icon: 'fas fa-window-maximize', color: '#3b82f6' },
+  { name: 'Interactive Web Pages', icon: 'fas fa-laptop-code', color: '#14b8a6' },
+  { name: 'Client-side programming', icon: 'fas fa-code', color: '#3b82f6' },
+  { name: 'API Development', icon: 'fas fa-network-wired', color: '#0284c7' },
+  { name: 'REST API', icon: 'fas fa-server', color: '#0ea5e9' },
+  { name: 'Attention To Detail', icon: 'fas fa-eye', color: '#3b82f6' },
+  { name: 'Critical Thinking', icon: 'fas fa-brain', color: '#8b5cf6' },
+  { name: 'Problem Solving', icon: 'fas fa-puzzle-piece', color: '#f59e0b' },
+  { name: 'Analytical Thinking', icon: 'fas fa-chart-pie', color: '#6366f1' },
+  { name: 'Communication', icon: 'fas fa-comments', color: '#ec4899' },
+  { name: 'Career Management', icon: 'fas fa-briefcase', color: '#10b981' },
+  { name: 'Research', icon: 'fas fa-magnifying-glass', color: '#06b6d4' },
+  { name: 'Learning Agility', icon: 'fas fa-graduation-cap', color: '#eab308' },
+  { name: 'Requirement Analysis', icon: 'fas fa-list-check', color: '#64748b' },
+
+  // IoT Competencies
+  { name: 'IoT', icon: 'fas fa-microchip', color: '#00bceb' },
+  { name: 'Internet Of Things', icon: 'fas fa-wifi', color: '#00bceb' },
+  { name: 'Digital Transformation', icon: 'fas fa-network-wired', color: '#6366f1' },
+  { name: 'Networking', icon: 'fas fa-network-wired', color: '#00bceb' },
+  { name: 'AI/ML', icon: 'fas fa-brain', color: '#ff6f00' }
 
 ];
 
@@ -124,5 +164,5 @@ export function getTechIcon(techName: string): string {
 
 export function getTechColor(techName: string): string {
   const match = TECH_MASTER_LIST.find(t => t.name.toLowerCase() === techName.toLowerCase());
-  return match ? match.color : 'rgba(255,255,255,0.6)';
+  return match ? match.color : 'currentColor';
 }

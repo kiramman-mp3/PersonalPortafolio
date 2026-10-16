@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 
 const NAV_OFFSET = 90;
 
+/** 'smooth' salvo que el usuario pida movimiento reducido. */
+export function scrollBehavior(): ScrollBehavior {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +17,7 @@ export class ScrollService {
     const offsetTop = element.offsetTop - NAV_OFFSET;
     window.scrollTo({
       top: Math.max(0, offsetTop),
-      behavior: 'smooth'
+      behavior: scrollBehavior()
     });
   }
 

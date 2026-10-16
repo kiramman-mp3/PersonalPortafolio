@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ContactService, ContactMessage } from '../../shared/services/contact.service';
@@ -23,7 +23,10 @@ export class ContactComponent {
   successMessage = '';
   errorMessage = '';
 
-  constructor(private contactService: ContactService) {}
+  constructor(
+    private contactService: ContactService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   onSubmit(): void {
     if (!this.formData.name || !this.formData.email || !this.formData.message) {
@@ -33,6 +36,7 @@ export class ContactComponent {
     this.isSubmitting = true;
     this.successMessage = '';
     this.errorMessage = '';
+    this.cdr.detectChanges();
 
     this.contactService.sendMessage(this.formData).subscribe({
       next: () => {
@@ -45,11 +49,13 @@ export class ContactComponent {
           subject: '',
           message: ''
         };
+        this.cdr.detectChanges();
       },
       error: (error) => {
         this.isSubmitting = false;
         console.error('Error sending message:', error);
         this.errorMessage = 'Ocurrió un error al enviar el mensaje. Por favor, inténtalo de nuevo más tarde.';
+        this.cdr.detectChanges();
       }
     });
   }

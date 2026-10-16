@@ -25,4 +25,20 @@ export class ContactController {
             });
         }
     }
+
+    static async delete(req: Request, res: Response) {
+        try {
+            const id = req.params.id as string;
+            if (!id) {
+                return res.status(400).json({ message: "Invalid contact ID" });
+            }
+            await ContactsService.deleteContact(id);
+            res.status(200).json({ message: "Contact message deleted successfully" });
+        } catch (error) {
+            res.status(500).json({
+                message: "Failed to delete contact message",
+                error: error instanceof Error ? error.message : "Unknown error"
+            });
+        }
+    }
 }

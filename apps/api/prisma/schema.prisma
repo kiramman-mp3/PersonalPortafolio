@@ -45,3 +45,23 @@ model Contacts {
   message   String   @db.Text
   createdAt DateTime @default(now())
 }
+
+model Certificates {
+  id            String   @id @default(uuid())
+  title         String   @db.VarChar(150)
+  issuer        String   @db.VarChar(100)
+  issuerIcon    String   @default("fas fa-certificate") @db.VarChar(50)
+  date          String   @db.VarChar(50)
+  category      String   @db.VarChar(50) // 'web' | 'backend' | 'cloud' | 'database' | 'mobile' | 'security' | 'support' | 'iot'
+  credentialId  String   @db.VarChar(100)
+  credentialUrl String?  @db.Text
+  description   String   @db.Text
+  skills        String[] @db.VarChar(255)
+  hours         Int      @default(0)
+  image         String?  @db.Text
+  expirationDate String?  @default("This credential does not expire") @db.VarChar(100)
+  badgeStatus    String?  @default("Visible") @db.VarChar(50)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+

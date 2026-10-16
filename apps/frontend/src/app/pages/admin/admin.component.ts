@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ServicesService, ServiceItem } from '../../shared/services/services.service';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
+import { CertificatesService, Certificate } from '../../shared/services/certificates.service';
+import { ContactService, ContactMessage } from '../../shared/services/contact.service';
 import { TECH_MASTER_LIST } from '../../shared/constants/tech-list';
 import { getBaseApiUrl } from '../../shared/constants/api-url';
 import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
@@ -16,17 +18,22 @@ import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
   styleUrl: './admin.component.scss'
 })
 export class AdminComponent implements OnInit {
-  isLoggedIn = false;
+  // Signals: OnPush is the default, so state set from async callbacks must notify the view
+  isLoggedIn = signal(false);
   password = '';
-  loginError = '';
+  loginError = signal('');
 
-  activeTab: 'services' | 'projects' = 'services';
+  activeTab: 'services' | 'projects' | 'certificates' | 'contacts' = 'services';
   editorMode: 'write' | 'preview' = 'write';
   
-  services: ServiceItem[] = [];
-  projects: Project[] = [];
+  services = signal<ServiceItem[]>([]);
+  projects = signal<Project[]>([]);
+  certificates = signal<Certificate[]>([]);
+  contacts = signal<ContactMessage[]>([]);
+  selectedContactMessage = signal<ContactMessage | null>(null);
+  showContactModal = signal(false);
   
-  token = '';
+  token = signal('');
 
   // Tech list from constants
   techMasterList = TECH_MASTER_LIST;
@@ -34,10 +41,12 @@ export class AdminComponent implements OnInit {
   customTechName = '';
 
   // Form states
-  showServiceModal = false;
-  showProjectModal = false;
+  showServiceModal = signal(false);
+  showProjectModal = signal(false);
+  showCertificateModal = signal(false);
   isEditingService = false;
   isEditingProject = false;
+  isEditingCertificate = false;
 
   serviceForm = {
     id: '',
@@ -61,40 +70,76 @@ export class AdminComponent implements OnInit {
     apkUrl: ''
   };
 
+  certificateForm = {
+    id: '',
+    title: '',
+    issuer: '',
+    issuerIcon: 'fas fa-certificate',
+    date: '',
+    category: 'web',
+    credentialId: '',
+    credentialUrl: '',
+    description: '',
+    hours: 0,
+    image: '',
+    expirationDate: ''
+  };
+
   constructor(
     private servicesService: ServicesService,
     private projectsService: ProjectsService,
-    private http: HttpClient
+    private certificatesService: CertificatesService,
+    private contactService: ContactService,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
       const savedToken = localStorage.getItem('admin_token');
       if (savedToken) {
-        this.token = savedToken;
-        this.isLoggedIn = true;
-        this.loadData();
+        this.token.set(savedToken);
+        // Verify saved session token with backend
+        this.http.get<any>(`${getBaseApiUrl()}/admin/verify`, {
+          headers: { 'x-api-key': savedToken }
+        }).subscribe({
+          next: () => {
+            this.isLoggedIn.set(true);
+            this.loadData();
+          },
+          error: (err) => {
+            if (err?.status === 401) {
+              console.warn('Sesión de administrador inválida o expirada.');
+              this.onLogout();
+            } else {
+              this.isLoggedIn.set(true);
+              this.loadData();
+            }
+          }
+        });
       }
     }
   }
 
   onLogin(): void {
-    this.loginError = '';
+    this.loginError.set('');
     this.http.post<any>(`${getBaseApiUrl()}/admin/login`, { password: this.password })
       .subscribe({
         next: (res) => {
           if (res && res.success && res.token) {
-            this.token = res.token;
+            this.token.set(res.token);
             if (typeof window !== 'undefined') {
               localStorage.setItem('admin_token', res.token);
             }
-            this.isLoggedIn = true;
+            this.isLoggedIn.set(true);
             this.loadData();
           }
         },
         error: (err) => {
           console.error(err);
-          this.loginError = 'Contraseña incorrecta';
+          this.loginError.set(err?.status === 0
+            ? 'No se pudo conectar con el servidor.'
+            : err?.error?.message || 'Contraseña incorrecta');
         }
       });
   }
@@ -103,19 +148,25 @@ export class AdminComponent implements OnInit {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('admin_token');
     }
-    this.token = '';
-    this.isLoggedIn = false;
-    this.services = [];
-    this.projects = [];
+    this.token.set('');
+    this.isLoggedIn.set(false);
+    this.services.set([]);
+    this.projects.set([]);
+    this.certificates.set([]);
+    this.contacts.set([]);
+    this.selectedContactMessage.set(null);
+    this.showContactModal.set(false);
   }
 
   loadData(): void {
-    this.servicesService.getServices().subscribe(data => this.services = data);
-    this.projectsService.getProjects().subscribe(data => this.projects = data);
+    this.servicesService.getServices().subscribe(data => this.services.set(data));
+    this.projectsService.getProjects().subscribe(data => this.projects.set(data));
+    this.certificatesService.getCertificates().subscribe(data => this.certificates.set(data));
+    this.loadContacts();
   }
 
   // IMAGE UPLOAD WITH COMPRESSION
-  onImageSelected(event: any, type: 'service' | 'project'): void {
+  onImageSelected(event: any, type: 'service' | 'project' | 'certificate'): void {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -153,9 +204,12 @@ export class AdminComponent implements OnInit {
           const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
           if (type === 'service') {
             this.serviceForm.imageUrl = compressedBase64;
-          } else {
+          } else if (type === 'project') {
             this.projectForm.image = compressedBase64;
+          } else {
+            this.certificateForm.image = compressedBase64;
           }
+          this.cdr.markForCheck();
         }
       };
       img.src = e.target.result;
@@ -197,7 +251,7 @@ export class AdminComponent implements OnInit {
       imageAlt: '',
       extendedInfoStr: ''
     };
-    this.showServiceModal = true;
+    this.showServiceModal.set(true);
   }
 
   openEditService(service: ServiceItem): void {
@@ -211,7 +265,7 @@ export class AdminComponent implements OnInit {
       imageAlt: service.imageAlt,
       extendedInfoStr: (service.extendedInfo || []).join('\n')
     };
-    this.showServiceModal = true;
+    this.showServiceModal.set(true);
   }
 
   saveService(): void {
@@ -225,29 +279,29 @@ export class AdminComponent implements OnInit {
     };
 
     if (this.isEditingService) {
-      this.servicesService.updateService(this.serviceForm.id, serviceData, this.token).subscribe({
+      this.servicesService.updateService(this.serviceForm.id, serviceData, this.token()).subscribe({
         next: () => {
-          this.showServiceModal = false;
+          this.showServiceModal.set(false);
           this.loadData();
         },
-        error: (err) => alert('Error al actualizar servicio: ' + (err.error?.message || err.message))
+        error: (err) => this.handleActionError(err, 'actualizar servicio')
       });
     } else {
-      this.servicesService.createService(serviceData, this.token).subscribe({
+      this.servicesService.createService(serviceData, this.token()).subscribe({
         next: () => {
-          this.showServiceModal = false;
+          this.showServiceModal.set(false);
           this.loadData();
         },
-        error: (err) => alert('Error al crear servicio: ' + (err.error?.message || err.message))
+        error: (err) => this.handleActionError(err, 'crear servicio')
       });
     }
   }
 
   deleteService(id: string): void {
     if (confirm('¿Estás seguro de que deseas eliminar este servicio?')) {
-      this.servicesService.deleteService(id, this.token).subscribe({
+      this.servicesService.deleteService(id, this.token()).subscribe({
         next: () => this.loadData(),
-        error: (err) => alert('Error al eliminar servicio')
+        error: (err) => this.handleActionError(err, 'eliminar servicio')
       });
     }
   }
@@ -268,7 +322,7 @@ export class AdminComponent implements OnInit {
       backendUrl: '',
       apkUrl: ''
     };
-    this.showProjectModal = true;
+    this.showProjectModal.set(true);
   }
 
   openEditProject(project: Project): void {
@@ -286,7 +340,7 @@ export class AdminComponent implements OnInit {
       backendUrl: project.backendUrl || '',
       apkUrl: project.apkUrl || ''
     };
-    this.showProjectModal = true;
+    this.showProjectModal.set(true);
   }
 
   saveProject(): void {
@@ -304,30 +358,204 @@ export class AdminComponent implements OnInit {
     };
 
     if (this.isEditingProject) {
-      this.projectsService.updateProject(this.projectForm.id, projectData, this.token).subscribe({
+      this.projectsService.updateProject(this.projectForm.id, projectData, this.token()).subscribe({
         next: () => {
-          this.showProjectModal = false;
+          this.showProjectModal.set(false);
           this.loadData();
         },
-        error: (err) => alert('Error al actualizar proyecto: ' + (err.error?.message || err.message))
+        error: (err) => this.handleActionError(err, 'actualizar proyecto')
       });
     } else {
-      this.projectsService.createProject(projectData, this.token).subscribe({
+      this.projectsService.createProject(projectData, this.token()).subscribe({
         next: () => {
-          this.showProjectModal = false;
+          this.showProjectModal.set(false);
           this.loadData();
         },
-        error: (err) => alert('Error al crear proyecto: ' + (err.error?.message || err.message))
+        error: (err) => this.handleActionError(err, 'crear proyecto')
       });
     }
   }
 
   deleteProject(id: string): void {
     if (confirm('¿Estás seguro de que deseas eliminar este proyecto?')) {
-      this.projectsService.deleteProject(id, this.token).subscribe({
+      this.projectsService.deleteProject(id, this.token()).subscribe({
         next: () => this.loadData(),
-        error: (err) => alert('Error al eliminar proyecto')
+        error: (err) => this.handleActionError(err, 'eliminar proyecto')
       });
+    }
+  }
+
+  // CERTIFICATES CRUD
+  openAddCertificate(): void {
+    this.isEditingCertificate = false;
+    this.selectedTechnologies = [];
+    this.certificateForm = {
+      id: '',
+      title: '',
+      issuer: '',
+      issuerIcon: 'fas fa-certificate',
+      date: new Date().getFullYear().toString(),
+      category: 'web',
+      credentialId: '',
+      credentialUrl: '',
+      description: '',
+      hours: 0,
+      image: '',
+      expirationDate: 'No expira'
+    };
+    this.showCertificateModal.set(true);
+  }
+
+  openEditCertificate(cert: Certificate): void {
+    this.isEditingCertificate = true;
+    this.selectedTechnologies = [...(cert.skills || [])];
+    this.certificateForm = {
+      id: cert.id,
+      title: cert.title,
+      issuer: cert.issuer,
+      issuerIcon: cert.issuerIcon || 'fas fa-certificate',
+      date: cert.date,
+      category: cert.category || 'web',
+      credentialId: cert.credentialId,
+      credentialUrl: cert.credentialUrl || '',
+      description: cert.description,
+      hours: cert.hours || 0,
+      image: cert.image || '',
+      expirationDate: cert.expirationDate || 'No expira'
+    };
+    this.showCertificateModal.set(true);
+  }
+
+  saveCertificate(): void {
+    const certData = {
+      title: this.certificateForm.title,
+      issuer: this.certificateForm.issuer,
+      issuerIcon: this.certificateForm.issuerIcon || 'fas fa-certificate',
+      date: this.certificateForm.date,
+      category: this.certificateForm.category,
+      credentialId: this.certificateForm.credentialId,
+      credentialUrl: this.certificateForm.credentialUrl || null,
+      description: this.certificateForm.description,
+      skills: this.selectedTechnologies,
+      hours: Number(this.certificateForm.hours) || 0,
+      image: this.certificateForm.image || null,
+      expirationDate: this.certificateForm.expirationDate || null
+    };
+
+    if (this.isEditingCertificate) {
+      this.certificatesService.updateCertificate(this.certificateForm.id, certData, this.token()).subscribe({
+        next: () => {
+          this.showCertificateModal.set(false);
+          this.loadData();
+        },
+        error: (err) => this.handleActionError(err, 'actualizar certificado')
+      });
+    } else {
+      this.certificatesService.createCertificate(certData, this.token()).subscribe({
+        next: () => {
+          this.showCertificateModal.set(false);
+          this.loadData();
+        },
+        error: (err) => this.handleActionError(err, 'crear certificado')
+      });
+    }
+  }
+
+  deleteCertificate(id: string): void {
+    if (confirm('¿Estás seguro de que deseas eliminar este certificado?')) {
+      this.certificatesService.deleteCertificate(id, this.token()).subscribe({
+        next: () => this.loadData(),
+        error: (err) => this.handleActionError(err, 'eliminar certificado')
+      });
+    }
+  }
+
+  getCategoryLabel(category: string): string {
+    switch (category) {
+      case 'web':
+        return 'Web & Frontend';
+      case 'backend':
+        return 'Backend & Arquitectura';
+      case 'cloud':
+        return 'Cloud & DevOps';
+      case 'database':
+        return 'Bases de Datos';
+      case 'mobile':
+        return 'Móvil & Otros';
+      case 'security':
+      case 'network':
+      case 'redes':
+        return 'Redes & Seguridad';
+      case 'support':
+      case 'helpdesk':
+        return 'Soporte Técnico & Help Desk';
+      case 'iot':
+        return 'IoT & Redes Conectadas';
+      case 'idiomas':
+      case 'languages':
+      case 'ingles':
+        return 'Idiomas';
+      default:
+        return category || 'General';
+    }
+  }
+
+  loadContacts(): void {
+    if (!this.token()) return;
+    this.contactService.getMessages(this.token()).subscribe({
+      next: (data) => this.contacts.set(data),
+      error: (err) => console.error('Error al cargar contactos:', err)
+    });
+  }
+
+  deleteContact(id?: string): void {
+    if (!id) return;
+    if (confirm('¿Estás seguro de que deseas eliminar este mensaje de contacto?')) {
+      this.contactService.deleteMessage(id, this.token()).subscribe({
+        next: () => {
+          this.contacts.set(this.contacts().filter((c) => c.id !== id));
+          if (this.selectedContactMessage()?.id === id) {
+            this.showContactModal.set(false);
+            this.selectedContactMessage.set(null);
+          }
+        },
+        error: (err) => this.handleActionError(err, 'eliminar mensaje de contacto')
+      });
+    }
+  }
+
+  openViewContact(msg: ContactMessage): void {
+    this.selectedContactMessage.set(msg);
+    this.showContactModal.set(true);
+  }
+
+  closeContactModal(): void {
+    this.showContactModal.set(false);
+    this.selectedContactMessage.set(null);
+  }
+
+  formatContactDate(dateStr?: string): string {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return dateStr;
+    }
+  }
+
+  private handleActionError(err: any, actionName: string): void {
+    if (err?.status === 401) {
+      alert('Tu sesión ha expirado o las credenciales no son válidas. Por favor, vuelve a ingresar la contraseña de administrador.');
+      this.onLogout();
+    } else {
+      alert(`Error al ${actionName}: ` + (err?.error?.message || err?.message || 'Error desconocido'));
     }
   }
 }
