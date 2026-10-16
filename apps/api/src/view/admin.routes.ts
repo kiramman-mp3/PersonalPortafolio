@@ -1,3 +1,9 @@
+import { Router, type Request, type Response } from "express";
+import { env } from "../config/env.ts";
+import { apiMiddleware } from "../infrastructure/middleware/key.ts";
+
+const adminRouter = Router();
+
 adminRouter.post("/login", (req: Request, res: Response) => {
     try {
         const body = req.body || {};
@@ -43,3 +49,9 @@ adminRouter.post("/login", (req: Request, res: Response) => {
         });
     }
 });
+
+adminRouter.get("/verify", apiMiddleware, (_req: Request, res: Response) => {
+    res.status(200).json({ success: true, message: "Sesión válida" });
+});
+
+export default adminRouter;
